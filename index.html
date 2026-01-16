@@ -4,102 +4,168 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Safety Training Mission: 10 Stages</title>
     <style>
-        body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #0f172a; font-family: 'Segoe UI', sans-serif; color: #f7fafc; overflow-x: hidden; touch-action: manipulation; }
+        body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #0f172a; font-family: 'Segoe UI', sans-serif; color: #f7fafc; overflow-x: hidden; user-select: none; touch-action: none; }
         
-        /* Main Controls */
-        .main-controls { width: 90%; max-width: 600px; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; background: #1e293b; padding: 10px; border-radius: 12px; box-sizing: border-box; }
+        .main-controls { width: 90%; max-width: 600px; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; background: #1e293b; padding: 10px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); box-sizing: border-box; }
         #start-menu { text-align: center; background: #1e293b; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 85%; max-width: 400px; }
-        #score { font-size: 20px; font-weight: bold; color: #60a5fa; flex-grow: 1; }
+        #score { font-size: 22px; font-weight: bold; color: #60a5fa; flex-grow: 1; }
 
-        /* Game Section */
         #game-section { display: none; text-align: center; width: 100%; max-width: 600px; position: relative; }
         canvas { width: 95%; height: auto; border: 3px solid #334155; background-color: #020617; border-radius: 12px; cursor: crosshair; }
 
         .progress-container { width: 90%; height: 10px; background: #334155; border-radius: 10px; margin: 10px auto; overflow: hidden; }
         .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #60a5fa, #3b82f6); transition: width 0.5s ease; }
 
-        .checkpoint-box { display: none; background: white; padding: 20px 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; width: 90%; max-width: 850px; color: #1e293b; max-height: 95vh; overflow-y: auto; }
+        .checkpoint-box { display: none; background: white; padding: 20px 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; width: 90%; max-width: 850px; color: #1e293b; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
 
-        /* STAGE 1 */
-        .diagram-wrapper { position: relative; width: 320px; height: 380px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto; }
-        .part-target { position: absolute; border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: bold; text-align: center; line-height: 1; }
-        .part-target.filled-correct { background: #1e3a8a !important; color: white !important; border-color: #1e40af; }
+        /* STAGE 1 SCALING */
+        .diagram-wrapper { position: relative; width: 300px; height: 350px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto; }
+        .part-target { position: absolute; border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 6px; font-weight: bold; text-align: center; line-height: 1; pointer-events: auto; }
+        .part-target.filled-correct { background: #1e3a8a !important; color: white !important; border-color: #1e40af; pointer-events: none; }
         
         .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; justify-items: center; }
-        .choice-box-uniform { width: 140px; padding: 10px 0; background: #2563eb; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; text-align: center; font-size: 13px; touch-action: none; }
+        .choice-box-uniform { width: 130px; padding: 12px 0; background: #2563eb; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; text-align: center; font-size: 11px; touch-action: none; position: relative; pointer-events: auto; }
+        .choice-box-uniform * { pointer-events: none; }
 
-        /* IPHONE STAGE 2 */
-        .iphone-frame { width: 240px; height: 480px; background: #000; border-radius: 40px; border: 8px solid #334155; margin: 0 auto; position: relative; padding: 12px; }
-        .iphone-notch { width: 100px; height: 20px; background: #334155; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
-        .iphone-screen { background: #000; height: 100%; border-radius: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .iphone-display { color: #fff; font-size: 30px; height: 40px; width: 100%; text-align: center; margin-bottom: 15px; letter-spacing: 2px; display: flex; align-items: center; justify-content: center;}
-        .iphone-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .iphone-key { width: 55px; height: 55px; background: #1c1c1e; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; }
-        .iphone-call { width: 60px; height: 60px; background: #34c759; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; border: none; margin-top: 15px; }
+        /* STAGE 2 IPHONE */
+        .iphone-frame { width: 220px; height: 420px; background: #000; border-radius: 35px; border: 6px solid #334155; margin: 0 auto; position: relative; padding: 10px; }
+        .iphone-notch { width: 90px; height: 18px; background: #334155; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
+        .iphone-screen { background: #000; height: 100%; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .iphone-display { color: #fff; font-size: 24px; height: 35px; width: 100%; text-align: center; margin-bottom: 10px; letter-spacing: 2px; }
+        .iphone-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .iphone-key { width: 50px; height: 50px; background: #1c1c1e; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; }
+        .iphone-call { width: 55px; height: 55px; background: #34c759; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: none; margin-top: 10px; }
 
-        /* GRID LOGIC */
-        .person-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
-        .person-drag { font-size: 50px; cursor: grab; padding: 8px; background: white; border-radius: 12px; border: 3px solid #3b82f6; }
-        .drop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .drop-zone { border: 2px dashed #94a3b8; border-radius: 12px; padding: 10px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; min-height: 70px; font-size: 13px; font-weight: bold; text-align: center; }
-        .filled-correct-grid { background: #dcfce7 !important; border: 2px solid #16a34a !important; color: #166534; }
+        .rainbow-grid { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-top: 15px; }
+        .rainbow-box { width: 50px; height: 70px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; color: white; text-transform: uppercase; border: 2px solid transparent; }
+        .locked { pointer-events: none !important; opacity: 0.5; }
+        .selected-correct { border: 3px solid #16a34a !important; opacity: 1 !important; transform: scale(1.05); box-shadow: 0 0 10px #16a34a; }
 
-        .pass-sentence { text-align: left; line-height: 2.2; font-size: 16px; background: #f8fafc; padding: 15px; border-radius: 12px; }
-        .blank-inline { display: inline-flex; width: 100px; height: 30px; border-bottom: 3px solid #3b82f6; margin: 0 5px; vertical-align: middle; justify-content: center; align-items: center; font-weight: bold; color: #1e40af; }
-
-        .btn { padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .btn { padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .btn-green { background: #16a34a; color: white; display: none; margin: 15px auto 0; }
         
-        .rainbow-grid { display: flex; gap: 5px; justify-content: center; margin-top: 15px; }
-        .rainbow-box { width: 55px; height: 70px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; color: white; text-transform: uppercase; border: 2px solid transparent; }
-        .rainbow-box.locked { pointer-events: none; opacity: 0.5; }
-        .rainbow-box.selected-correct { pointer-events: none; border: 2px solid #16a34a; opacity: 1; transform: scale(1.1); box-shadow: 0 0 10px #16a34a; }
+        #fail-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); color: #ef4444; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; border-radius: 12px; }
         
-        #fail-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); color: #ef4444; flex-direction: column; align-items: center; justify-content: center; z-index: 100; border-radius: 12px; }
+        .person-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
+        .person-drag { font-size: 55px; cursor: grab; padding: 5px; background: white; border-radius: 50%; border: 4px solid #3b82f6; touch-action: none; position: relative; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;}
+        .drop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .drop-zone { border: 2px dashed #94a3b8; border-radius: 12px; padding: 10px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; min-height: 60px; font-size: 12px; font-weight: bold; text-align: center; color: #475569;}
+        .filled-correct-grid { background: #dcfce7 !important; border: 2px solid #16a34a !important; color: #166534 !important; }
+        .blank-inline { display: inline-flex; width: 100px; height: 30px; border-bottom: 3px solid #3b82f6; margin: 0 5px; vertical-align: middle; justify-content: center; align-items: center; font-weight: bold; color: #1e40af; }
     </style>
 </head>
 <body>
 
     <div id="start-menu">
-        <h1 style="color: #60a5fa;">Safety Training Mission</h1>
+        <h1 style="color: #60a5fa;">Safety Mission</h1>
         <p>Complete 10 Stages to become a Certified Safety Hero.</p>
         <button class="btn" style="background:#3b82f6; color:white;" onclick="startGame()">START MISSION</button>
     </div>
 
     <div class="main-controls" id="top-bar" style="display: none;">
         <div id="score">Score: 0</div>
-        <button onclick="location.reload()" style="background:#ef4444; color:white; border:none; padding:8px 18px; border-radius:8px; cursor:pointer;">Reset Game</button>
+        <button onclick="location.reload()" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-size: 12px;">Reset</button>
     </div>
 
     <div id="game-section">
         <canvas id="gameCanvas"></canvas>
         <div id="fail-overlay">
-            <h1 style="font-size: 40px;">MISSION FAILED</h1>
-            <p style="color: white;">The fire reached the extinguisher!</p>
-            <button class="btn" style="background:#ef4444; color:white; margin-top:15px;" onclick="location.reload()">RETRY MISSION</button>
+            <h1 style="font-size: 40px;">FAILED</h1>
+            <button class="btn" style="background:#ef4444; color:white;" onclick="location.reload()">RETRY</button>
         </div>
         <div class="progress-container"><div class="progress-fill" id="p-bar-main"></div></div>
-        <p style="color: #94a3b8; font-size: 14px; margin: 5px;"><b>Hold SPACE or Tap</b> to spray!</p>
+        <p style="color: #94a3b8; font-size: 12px;"><b>Hold SPACE or Click/Tap</b> to spray white extinguisher!</p>
     </div>
 
-    <script>
-/** --- GAME ENGINE --- **/
-const canvas = document.getElementById("gameCanvas"); const ctx = canvas.getContext("2d"); 
-canvas.width = 600; canvas.height = 300; 
+    <div id="quiz-section" class="checkpoint-box">
+        <h3 style="margin: 0 0 5px 0;">Stage 1: Equipment Check</h3>
+        <p style="font-size:12px; margin-bottom:10px;">Label the parts of the fire extinguisher.</p>
+        <div class="diagram-wrapper">
+            <div class="part-target" data-answer="HANDLE" style="top:42px; left:138px;"></div>
+            <div class="part-target" data-answer="LEVER" style="top:92px; left:168px;"></div>
+            <div class="part-target" data-answer="PIN" style="top:75px; left:148px;"></div>
+            <div class="part-target" data-answer="PRESSURE GAUGE" style="top:85px; left:128px;"></div>
+            <div class="part-target" data-answer="HOSE" style="top:140px; left:90px;"></div>
+            <div class="part-target" data-answer="NOZZLE" style="top:270px; left:100px;"></div>
+        </div>
+        <div class="choice-grid">
+            <div class="choice-box-uniform dr-item" id="L1">PRESSURE GAUGE</div>
+            <div class="choice-box-uniform dr-item" id="L2">LEVER</div>
+            <div class="choice-box-uniform dr-item" id="L3">NOZZLE</div>
+            <div class="choice-box-uniform dr-item" id="L4">PIN</div>
+            <div class="choice-box-uniform dr-item" id="L5">HOSE</div>
+            <div class="choice-box-uniform dr-item" id="L6">HANDLE</div>
+        </div>
+        <button id="quizReturnBtn" class="btn btn-green" onclick="returnToGame('quiz-section')">CONTINUE →</button>
+    </div>
+
+    <div id="phone-section" class="checkpoint-box">
+        <h3>Stage 2: Emergency Response</h3>
+        <p style="font-size: 14px;">What is St. Luke's Medical Center Emergency Number?</p>
+        <div class="iphone-frame">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen">
+                <div class="iphone-display" id="phone-display"></div>
+                <div class="iphone-grid">
+                    <div class="iphone-key" onclick="pressKey('1')">1</div><div class="iphone-key" onclick="pressKey('2')">2</div><div class="iphone-key" onclick="pressKey('3')">3</div>
+                    <div class="iphone-key" onclick="pressKey('4')">4</div><div class="iphone-key" onclick="pressKey('5')">5</div><div class="iphone-key" onclick="pressKey('6')">6</div>
+                    <div class="iphone-key" onclick="pressKey('7')">7</div><div class="iphone-key" onclick="pressKey('8')">8</div><div class="iphone-key" onclick="pressKey('9')">9</div>
+                    <div class="iphone-key" style="color:#ff3b30; font-size:10px;" onclick="clearPhone()">DEL</div><div class="iphone-key" onclick="pressKey('0')">0</div><div class="iphone-key">#</div>
+                </div>
+                <button class="iphone-call" onclick="makeCall()">📞</button>
+            </div>
+        </div>
+        <div id="phone-msg" style="margin-top:10px; font-weight:bold;"></div>
+    </div>
+
+    <div id="grid-stage-section" class="checkpoint-box">
+        <h2 id="grid-title" style="margin-top:0;"></h2>
+        <div class="person-container">
+            <div class="person-drag dr-item" id="person-logic">🚶</div>
+            <div style="background:#3b82f6; color:white; padding:8px 15px; border-radius:20px; font-weight:bold; font-size:12px;">Drag me to Safety</div>
+        </div>
+        <div class="drop-grid" id="main-drop-grid"></div>
+        <div id="grid-msg" style="margin-top:10px; font-weight:bold; font-size:12px;"></div>
+        <button id="gridNextBtn" class="btn btn-green" onclick="returnToGame('grid-stage-section')">CONTINUE →</button>
+    </div>
+
+    <div id="pass-section" class="checkpoint-box">
+        <h3>Stage 4: PASS Protocol</h3>
+        <p style="font-size:12px;">Drag the correct words to complete the sequence.</p>
+        <div style="text-align:left; line-height:2.2; font-size:14px; background:#f8fafc; padding:15px; border-radius:12px;">
+            Pull the <span class="blank-inline t-trg" id="slot-PIN"></span>,<br>
+            Aim the <span class="blank-inline t-trg" id="slot-NOZZLE"></span> at base,<br>
+            Squeeze the <span class="blank-inline t-trg" id="slot-LEVER"></span>,<br>
+            <span class="blank-inline t-trg" id="slot-SWEEP"></span> from side to side.
+        </div>
+        <div id="pass-bank" class="choice-grid"></div>
+        <button id="passReturnBtn" class="btn btn-green" onclick="returnToGame('pass-section')">CONTINUE →</button>
+    </div>
+
+    <div id="logic-box" class="checkpoint-box">
+        <h2 id="logic-title"></h2>
+        <p id="logic-desc" style="font-size:13px;"></p>
+        <div id="logic-body"></div>
+        <div id="logic-msg" style="margin-top:10px; font-weight:bold; font-size:12px;"></div>
+        <button id="logicNextBtn" class="btn btn-green" onclick="returnToGame('logic-box')">CONTINUE →</button>
+    </div>
+
+    <div id="congrats" class="checkpoint-box">
+        <h1 style="color:#2563eb;">MISSION COMPLETE! 🏆</h1>
+        <p>Congratulations Hero! You are now fully trained.</p>
+        <button class="btn" style="background:#2563eb; color:white;" onclick="location.reload()">REPLAY MISSION</button>
+    </div>
+
+<script>
+/** --- CORE ENGINE --- **/
+const canvas = document.getElementById("gameCanvas"); const ctx = canvas.getContext("2d"); canvas.width = 600; canvas.height = 300;
 let score = 0, gameActive = false, isSpraying = false, fires = [], particles = [], cp = Array(11).fill(false), stagesFinished = 0;
 
-function startGame() { 
-    document.getElementById("start-menu").style.display="none"; 
-    document.getElementById("game-section").style.display="block"; 
-    document.getElementById("top-bar").style.display="flex"; 
-    setupTouchListeners();
-    gameActive=true; 
-    loop(); 
-}
+function startGame() { document.getElementById("start-menu").style.display="none"; document.getElementById("game-section").style.display="block"; document.getElementById("top-bar").style.display="flex"; initUnifiedControls(); gameActive=true; loop(); }
 
 function update() {
     if (!gameActive) return;
-    if (isSpraying) for(let i=0;i<6;i++) particles.push({x:90,y:220,vx:8+Math.random()*4,vy:(Math.random()-0.5)*4,life:25,size:4+Math.random()*8});
+    if (isSpraying) for(let i=0;i<5;i++) particles.push({x:90,y:220,vx:8+Math.random()*4,vy:(Math.random()-0.5)*4,life:25,size:4+Math.random()*8});
     for(let i=particles.length-1;i>=0;i--){particles[i].x+=particles[i].vx; particles[i].y+=particles[i].vy; if(--particles[i].life<=0)particles.splice(i,1);}
     if(Math.random()<0.04) fires.push({x:600,y:230});
     for(let i=fires.length-1;i>=0;i--){ 
@@ -109,85 +175,165 @@ function update() {
                 fires.splice(i,1); score++; document.getElementById("score").innerText="Score: "+score; checkCheckpoint();
             }
         });
-        if(fires[i] && fires[i].x < 90) { 
-            fires.splice(i, 1);
-            if(score > 0) score--;
-            document.getElementById("score").innerText="Score: "+score;
-        }
+        if(fires[i] && fires[i].x < 90) { fires.splice(i,1); if(score > 0) score--; document.getElementById("score").innerText="Score: "+score; }
     }
 }
-
 function draw(){
     ctx.clearRect(0,0,600,300); ctx.fillStyle="#1e293b"; ctx.fillRect(0,270,600,30); ctx.fillStyle="#ffffff";
     particles.forEach(p=>{ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();}); 
     ctx.fillStyle="#ef4444"; ctx.fillRect(50,200,40,60); ctx.font="35px Arial"; fires.forEach(f=>ctx.fillText("🔥",f.x,f.y+30));
 }
-
 function loop(){if(gameActive){update(); draw(); requestAnimationFrame(loop);}}
 
-// Controls
-window.addEventListener("mousedown", () => { isSpraying = true; });
-window.addEventListener("mouseup", () => { isSpraying = false; });
-window.addEventListener("touchstart", (e) => { if(gameActive && e.target.id === 'gameCanvas') isSpraying = true; }, {passive: false});
-window.addEventListener("touchend", () => { isSpraying = false; });
-window.addEventListener("keydown", (e) => { if (e.code === "Space") { e.preventDefault(); isSpraying = true; } });
-window.addEventListener("keyup", (e) => { if (e.code === "Space") isSpraying = false; });
+function initUnifiedControls() {
+    canvas.addEventListener("pointerdown", (e) => { e.preventDefault(); isSpraying = true; e.target.setPointerCapture(e.pointerId); });
+    canvas.addEventListener("pointerup", () => isSpraying = false);
+    window.addEventListener("keydown", (e) => { if(e.code==="Space") { e.preventDefault(); isSpraying=true; } });
+    window.addEventListener("keyup", (e) => { if(e.code==="Space") isSpraying=false; });
 
-/** --- TOUCH DRAG LOGIC --- **/
-let activeDragElement = null;
-let offset = { x: 0, y: 0 };
-
-function setupTouchListeners() {
-    document.addEventListener('touchstart', (e) => {
-        if (e.target.classList.contains('choice-box-uniform') || e.target.id === 'person-logic') {
-            e.preventDefault();
-            activeDragElement = e.target;
-            const touch = e.touches[0];
-            const rect = activeDragElement.getBoundingClientRect();
-            offset.x = touch.clientX - rect.left;
-            offset.y = touch.clientY - rect.top;
-            activeDragElement.style.position = 'fixed';
-            activeDragElement.style.zIndex = '2000';
+    let activeItem = null, shiftX, shiftY;
+    document.addEventListener("pointerdown", (e) => {
+        if (e.target.classList.contains("dr-item")) {
+            activeItem = e.target;
+            const rect = activeItem.getBoundingClientRect();
+            shiftX = e.clientX - rect.left; shiftY = e.clientY - rect.top;
+            activeItem.style.position = 'fixed'; activeItem.style.zIndex = 1000;
+            activeItem.setPointerCapture(e.pointerId);
         }
-    }, { passive: false });
+    });
 
-    document.addEventListener('touchmove', (e) => {
-        if (!activeDragElement) return;
-        e.preventDefault();
-        const touch = e.touches[0];
-        activeDragElement.style.left = (touch.clientX - offset.x) + 'px';
-        activeDragElement.style.top = (touch.clientY - offset.y) + 'px';
-    }, { passive: false });
+    document.addEventListener("pointermove", (e) => {
+        if (!activeItem) return;
+        activeItem.style.left = e.clientX - shiftX + 'px'; activeItem.style.top = e.clientY - shiftY + 'px';
+    });
 
-    document.addEventListener('touchend', (e) => {
-        if (!activeDragElement) return;
-        const touch = e.changedTouches[0];
-        checkDropCollision(activeDragElement, touch.clientX, touch.clientY);
-        activeDragElement.style.position = 'static';
-        activeDragElement = null;
+    document.addEventListener("pointerup", (e) => {
+        if (!activeItem) return;
+        activeItem.style.visibility = 'hidden';
+        const target = document.elementFromPoint(e.clientX, e.clientY);
+        activeItem.style.visibility = 'visible';
+
+        if (target && target.classList.contains("part-target")) {
+            if (target.dataset.answer === activeItem.innerText) {
+                target.innerText = activeItem.innerText; target.classList.add("filled-correct"); activeItem.style.display = "none";
+                if (document.querySelectorAll('.checkpoint-box[style*="block"] .filled-correct').length === 6) document.getElementById("quizReturnBtn").style.display = "block";
+            }
+        }
+        if (target && target.classList.contains("drop-zone")) handleGridDrop(activeItem, target);
+        if (target && target.classList.contains("t-trg")) {
+            if (target.id === "slot-"+activeItem.innerText) {
+                target.innerText = activeItem.innerText; target.style.border = "none"; activeItem.style.display = "none";
+                pc++; if(pc===4) document.getElementById("passReturnBtn").style.display = "block";
+            }
+        }
+        activeItem.style.position = 'static'; activeItem = null;
     });
 }
 
-// Logic for Stages 1, 3, 4, 9, 10 maintained exactly as before...
-// chkC color strict logic also maintained for Orange, Pink, Silver...
 function checkCheckpoint() {
     const s = score;
     if (s===10 && !cp[0]) { cp[0]=true; showCP("quiz-section"); }
+    else if (s===20 && !cp[1]) { cp[1]=true; showCP("phone-section"); }
+    else if (s===30 && !cp[2]) { cp[2]=true; setupGrid(3); }
+    else if (s===40 && !cp[3]) { cp[3]=true; setupPass(); }
+    else if (s===50 && !cp[4]) { cp[4]=true; setupRace(); }
+    else if (s===60 && !cp[5]) { cp[5]=true; setupCode(6); }
+    else if (s===70 && !cp[6]) { cp[6]=true; setupCode(7); }
+    else if (s===80 && !cp[7]) { cp[7]=true; setupCode(8); }
+    else if (s===90 && !cp[8]) { cp[8]=true; setupGrid(9); }
+    else if (s===100 && !cp[9]) { cp[9]=true; setupGrid(10); }
 }
 
 function showCP(id) { gameActive=false; document.getElementById("game-section").style.display="none"; document.getElementById(id).style.display="block"; }
-function returnToGame(id) { stagesFinished++; document.getElementById("p-bar-main").style.width=(stagesFinished/10*100)+"%"; document.getElementById(id).style.display="none"; document.getElementById("game-section").style.display="block"; fires=[]; gameActive=true; loop(); }
+function returnToGame(id) { stagesFinished++; document.getElementById("p-bar-main").style.width=(stagesFinished/10*100)+"%"; if(stagesFinished===10){document.getElementById(id).style.display="none"; document.getElementById("congrats").style.display="block"; return;} document.getElementById(id).style.display="none"; document.getElementById("game-section").style.display="block"; fires=[]; gameActive=true; loop(); }
+
+function pressKey(n){const d=document.getElementById("phone-display"); if(d.innerText.length<4) d.innerText+=n;}
+function clearPhone(){document.getElementById("phone-display").innerText="";}
+function makeCall(){ if(document.getElementById("phone-display").innerText==="1111"){ document.getElementById("phone-display").innerText="Calling..."; setTimeout(()=>returnToGame("phone-section"), 1500);} }
+
+function setupPass(){
+    showCP("pass-section"); const bank = document.getElementById("pass-bank"); bank.innerHTML="";
+    const words = ["PIN", "NOZZLE", "LEVER", "SWEEP"].sort(()=>Math.random()-0.5);
+    words.forEach((w,i)=> bank.innerHTML += `<div class="choice-box-uniform dr-item" id="P${i}">${w}</div>`);
+    pc=0;
+}
+let pc = 0, gStep = 0;
+
+function setupGrid(stg){
+    showCP("grid-stage-section"); const grid = document.getElementById("main-drop-grid"); grid.innerHTML = "";
+    document.getElementById("gridNextBtn").style.display="none"; document.getElementById("grid-msg").innerText=""; gStep = 0;
+    let items = [];
+    if(stg===3) {
+        document.getElementById("grid-title").innerText = "Stage 3: Earthquake Logic";
+        items = [{t:"🙇 DUCK", c:true, s:0}, {t:"🏃 RUN", c:false}, {t:"🏢 LIFT", c:false}, {t:"🛡️ COVER", c:true, s:1}, {t:"🪟 WINDOW", c:false}, {t:"✊ HOLD", c:true, s:2}];
+    } else if(stg===9) {
+        document.getElementById("grid-title").innerText = "Stage 9: Quezon City Assembly Areas";
+        items = [{t:"🚗 MAB Parking Area", c:true}, {t:"🏥 Sta. Ignaciana St.", c:true}, {t:"⛪ Episcopal Church Lawn", c:true}, {t:"🍔 BGC Stopover", c:false}];
+    } else {
+        document.getElementById("grid-title").innerText = "Stage 10: Global City Assembly Areas";
+        items = [{t:"🏨 Rizal Drive Lobby", c:true}, {t:"🛣️ High Street", c:false}, {t:"🏢 34th Street", c:true}, {t:"🍔 BGC Stopover", c:false}];
+    }
+    items.forEach(item => {
+        const z = document.createElement("div"); z.className="drop-zone"; z.innerText=item.t; 
+        z.dataset.correct = item.c; if(item.s !== undefined) z.dataset.step = item.s;
+        grid.appendChild(z);
+    });
+}
+
+function handleGridDrop(el, trg) {
+    if (trg.classList.contains("filled-correct-grid")) return;
+    let isEarthquake = document.getElementById("grid-title").innerText.includes("Earthquake");
+    let ok = false;
+    
+    if (isEarthquake) {
+        if (trg.dataset.correct === "true" && parseInt(trg.dataset.step) === gStep) { ok = true; gStep++; }
+        else { document.getElementById("grid-msg").innerText = "Wrong Step!"; }
+    } else {
+        if (trg.dataset.correct === "true") ok = true;
+    }
+
+    if (ok) {
+        trg.classList.add("filled-correct-grid"); trg.innerText = "✅ " + trg.innerText;
+        checkGridWin();
+    }
+}
+function checkGridWin(){
+    const trgs = document.querySelectorAll('.checkpoint-box[style*="block"] .drop-zone[data-correct="true"]');
+    if([...trgs].every(t=>t.classList.contains('filled-correct-grid'))) document.getElementById("gridNextBtn").style.display="block";
+}
+
+let curLvl = 0;
+function setupCode(s){
+    curLvl = s; showCP("logic-box"); document.getElementById("logic-msg").innerText="";
+    document.getElementById("logic-title").innerText=`Stage ${s}: Emergency Codes`;
+    let q = s===6 ? "Disaster/Hazmat?" : s===7 ? "Child Abduction?" : "Active Shooter?";
+    document.getElementById("logic-desc").innerText="What code to activate for " + q;
+    document.getElementById("logic-body").innerHTML = `<div class="rainbow-grid">` + ['Red','Orange','Yellow','Green','Blue','Pink','Silver'].map(c => `<div class="rainbow-box ri" style="background:${c.toLowerCase()==='silver'?'#c0c0c0':c.toLowerCase()}" onclick="chkC('${c}', this)">${c}</div>`).join('') + `</div>`;
+}
 
 function chkC(c, el){
-    let win = (currentLevel===6 && c==='Orange') || (currentLevel===7 && c==='Pink') || (currentLevel===8 && c==='Silver');
+    let win = (curLvl===6 && c==='Orange') || (curLvl===7 && c==='Pink') || (curLvl===8 && c==='Silver');
     if(win){ 
-        document.getElementById("logic-msg").innerText="Correct! ✅"; 
-        document.getElementById("logicNextBtn").style.display="block"; 
-        document.querySelectorAll('.rainbow-box').forEach(item => {
-            item.classList.add('locked');
-            if(item === el) item.classList.add('selected-correct');
-        });
+        document.getElementById("logic-msg").innerText="Correct! ✅"; document.getElementById("logicNextBtn").style.display="block"; 
+        document.querySelectorAll('.ri').forEach(box => box.classList.add('locked'));
+        el.classList.add('selected-correct');
     } else { document.getElementById("logic-msg").innerText="Wrong code! ❌"; }
+}
+
+const raceData = [{c:'r', o:['Run','Remove','Rescue','Rest'], a:'Rescue', e:'🚑'},{c:'a', o:['Attack','Alert','Aim','Alarm'], a:'Alarm', e:'🔔'},{c:'c', o:['Contain','Connect','Confine','Control'], a:'Confine', e:'🚪'},{c:'e', o:['Evacuate','Exit','Extinguish','Eat'], a:'Extinguish', e:'🧯'}];
+let rStep = 0;
+function setupRace(){
+    showCP("logic-box"); document.getElementById("logic-title").innerText="Stage 5: RACE";
+    document.getElementById("logic-body").innerHTML = `<div id="rd"><div class="race-letter-box" id="rr">R</div><div class="race-letter-box" id="ra">A</div><div class="race-letter-box" id="rc">C</div><div class="race-letter-box" id="re">E</div></div><div id="ro" class="drop-grid"></div>`;
+    rStep = 0; drawRace();
+}
+function drawRace(){
+    const o = document.getElementById("ro"); o.innerHTML="";
+    if(rStep<4) raceData[rStep].o.forEach(opt => {
+        const b = document.createElement("div"); b.className="drop-zone"; b.style.cursor="pointer"; b.innerText=opt;
+        b.onclick=()=>{ if(opt===raceData[rStep].a){ document.getElementById("r"+raceData[rStep].c).innerText=raceData[rStep].e+" "+opt; rStep++; if(rStep===4) document.getElementById("logicNextBtn").style.display="block"; else drawRace();} };
+        o.appendChild(b);
+    });
 }
 </script>
 </body>
