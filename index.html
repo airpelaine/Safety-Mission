@@ -27,7 +27,7 @@
         .choice-box-uniform { width: 130px; padding: 12px 0; background: #2563eb; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; text-align: center; font-size: 11px; touch-action: none; position: relative; pointer-events: auto; }
         .choice-box-uniform * { pointer-events: none; }
 
-        /* STAGE 2 IPHONE */
+        /* IPHONE STAGE 2 */
         .iphone-frame { width: 220px; height: 420px; background: #000; border-radius: 35px; border: 6px solid #334155; margin: 0 auto; position: relative; padding: 10px; }
         .iphone-notch { width: 90px; height: 18px; background: #334155; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
         .iphone-screen { background: #000; height: 100%; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -81,12 +81,12 @@
         <h3 style="margin: 0 0 5px 0;">Stage 1: Equipment Check</h3>
         <p style="font-size:12px; margin-bottom:10px;">Label the parts of the fire extinguisher.</p>
         <div class="diagram-wrapper">
-            <div class="part-target" data-answer="HANDLE" style="top:42px; left:138px;"></div>
-            <div class="part-target" data-answer="LEVER" style="top:92px; left:168px;"></div>
-            <div class="part-target" data-answer="PIN" style="top:75px; left:148px;"></div>
-            <div class="part-target" data-answer="PRESSURE GAUGE" style="top:85px; left:128px;"></div>
-            <div class="part-target" data-answer="HOSE" style="top:140px; left:90px;"></div>
-            <div class="part-target" data-answer="NOZZLE" style="top:270px; left:100px;"></div>
+            <div class="part-target" data-answer="HANDLE" style="top:32px; left:138px;"></div>
+            <div class="part-target" data-answer="LEVER" style="top:82px; left:168px;"></div>
+            <div class="part-target" data-answer="PIN" style="top:65px; left:148px;"></div>
+            <div class="part-target" data-answer="PRESSURE GAUGE" style="top:75px; left:128px;"></div>
+            <div class="part-target" data-answer="HOSE" style="top:130px; left:90px;"></div>
+            <div class="part-target" data-answer="NOZZLE" style="top:260px; left:100px;"></div>
         </div>
         <div class="choice-grid">
             <div class="choice-box-uniform dr-item" id="L1">PRESSURE GAUGE</div>
@@ -230,6 +230,7 @@ function initUnifiedControls() {
     });
 }
 
+/** --- LOGIC --- **/
 function checkCheckpoint() {
     const s = score;
     if (s===10 && !cp[0]) { cp[0]=true; showCP("quiz-section"); }
@@ -289,7 +290,7 @@ function handleGridDrop(el, trg) {
         if (trg.dataset.correct === "true" && parseInt(trg.dataset.step) === gStep) { ok = true; gStep++; }
         else { document.getElementById("grid-msg").innerText = "Wrong Step!"; }
     } else {
-        if (trg.dataset.correct === "true") ok = true;
+        if (trg.dataset.correct === "true" && el.innerText === trg.innerText.replace("✅ ","")) ok = true;
     }
 
     if (ok) {
