@@ -81,13 +81,10 @@
         <h3 style="margin: 0 0 5px 0;">Stage 1: Equipment Check</h3>
         <p style="font-size:12px; margin-bottom:10px;">Label the parts of the fire extinguisher.</p>
         <div class="diagram-wrapper">
-            <div class="part-target" data-answer="HANDLE" style="top:32px; left:138px;"></div>
-            <div class="part-target" data-answer="LEVER" style="top:82px; left:168px;"></div>
-            <div class="part-target" data-answer="PIN" style="top:65px; left:148px;"></div>
-            <div class="part-target" data-answer="PRESSURE GAUGE" style="top:75px; left:128px;"></div>
-            <div class="part-target" data-answer="HOSE" style="top:130px; left:90px;"></div>
-            <div class="part-target" data-answer="NOZZLE" style="top:260px; left:100px;"></div>
-        </div>
+            <div class="part-target" data-answer="HANDLE" style="top:32px; left:158px;"></div>
+            <div class="part-target" data-answer="LEVER" style="top:72px; left:168px;"></div>
+            <div class="part-target" data-answer="PIN" style="top:40px; left:133px;"></div> <div class="part-target" data-answer="PRESSURE GAUGE" style="top:55px; left:128px;"></div> <div class="part-target" data-answer="HOSE" style="top:130px; left:70px;"></div>
+            <div class="part-target" data-answer="NOZZLE" style="top:240px; left:90px;"></div> </div>
         <div class="choice-grid">
             <div class="choice-box-uniform dr-item" id="L1">PRESSURE GAUGE</div>
             <div class="choice-box-uniform dr-item" id="L2">LEVER</div>
@@ -230,7 +227,6 @@ function initUnifiedControls() {
     });
 }
 
-/** --- LOGIC --- **/
 function checkCheckpoint() {
     const s = score;
     if (s===10 && !cp[0]) { cp[0]=true; showCP("quiz-section"); }
@@ -264,49 +260,25 @@ function setupGrid(stg){
     showCP("grid-stage-section"); const grid = document.getElementById("main-drop-grid"); grid.innerHTML = "";
     document.getElementById("gridNextBtn").style.display="none"; document.getElementById("grid-msg").innerText=""; gStep = 0;
     let items = [];
-    if(stg===3) {
-        document.getElementById("grid-title").innerText = "Stage 3: Earthquake Logic";
-        items = [{t:"🙇 DUCK", c:true, s:0}, {t:"🏃 RUN", c:false}, {t:"🏢 LIFT", c:false}, {t:"🛡️ COVER", c:true, s:1}, {t:"🪟 WINDOW", c:false}, {t:"✊ HOLD", c:true, s:2}];
-    } else if(stg===9) {
-        document.getElementById("grid-title").innerText = "Stage 9: Quezon City Assembly Areas";
-        items = [{t:"🚗 MAB Parking Area", c:true}, {t:"🏥 Sta. Ignaciana St.", c:true}, {t:"⛪ Episcopal Church Lawn", c:true}, {t:"🍔 BGC Stopover", c:false}];
-    } else {
-        document.getElementById("grid-title").innerText = "Stage 10: Global City Assembly Areas";
-        items = [{t:"🏨 Rizal Drive Lobby", c:true}, {t:"🛣️ High Street", c:false}, {t:"🏢 34th Street", c:true}, {t:"🍔 BGC Stopover", c:false}];
-    }
-    items.forEach(item => {
-        const z = document.createElement("div"); z.className="drop-zone"; z.innerText=item.t; 
-        z.dataset.correct = item.c; if(item.s !== undefined) z.dataset.step = item.s;
-        grid.appendChild(z);
-    });
+    if(stg===3) { document.getElementById("grid-title").innerText = "Stage 3: Earthquake Logic"; items = [{t:"🙇 DUCK", c:true, s:0}, {t:"🏃 RUN", c:false}, {t:"🏢 LIFT", c:false}, {t:"🛡️ COVER", c:true, s:1}, {t:"🪟 WINDOW", c:false}, {t:"✊ HOLD", c:true, s:2}]; }
+    else if(stg===9) { document.getElementById("grid-title").innerText = "Stage 9: Quezon City Assembly Areas"; items = [{t:"🚗 MAB Parking Area", c:true}, {t:"🏥 Sta. Ignaciana St.", c:true}, {t:"⛪ Episcopal Church Lawn", c:true}, {t:"🍔 BGC Stopover", c:false}]; }
+    else { document.getElementById("grid-title").innerText = "Stage 10: Global City Assembly Areas"; items = [{t:"🏨 Rizal Drive Lobby", c:true}, {t:"🛣️ High Street", c:false}, {t:"🏢 34th Street", c:true}, {t:"🍔 BGC Stopover", c:false}]; }
+    items.forEach(item => { const z = document.createElement("div"); z.className="drop-zone"; z.innerText=item.t; z.dataset.correct = item.c; if(item.s !== undefined) z.dataset.step = item.s; grid.appendChild(z); });
 }
 
 function handleGridDrop(el, trg) {
     if (trg.classList.contains("filled-correct-grid")) return;
     let isEarthquake = document.getElementById("grid-title").innerText.includes("Earthquake");
     let ok = false;
-    
-    if (isEarthquake) {
-        if (trg.dataset.correct === "true" && parseInt(trg.dataset.step) === gStep) { ok = true; gStep++; }
-        else { document.getElementById("grid-msg").innerText = "Wrong Step!"; }
-    } else {
-        if (trg.dataset.correct === "true" && el.innerText === trg.innerText.replace("✅ ","")) ok = true;
-    }
-
-    if (ok) {
-        trg.classList.add("filled-correct-grid"); trg.innerText = "✅ " + trg.innerText;
-        checkGridWin();
-    }
+    if (isEarthquake) { if (trg.dataset.correct === "true" && parseInt(trg.dataset.step) === gStep) { ok = true; gStep++; } else { document.getElementById("grid-msg").innerText = "Wrong Step!"; } }
+    else { if (trg.dataset.correct === "true") ok = true; }
+    if (ok) { trg.classList.add("filled-correct-grid"); trg.innerText = "✅ " + trg.innerText; checkGridWin(); }
 }
-function checkGridWin(){
-    const trgs = document.querySelectorAll('.checkpoint-box[style*="block"] .drop-zone[data-correct="true"]');
-    if([...trgs].every(t=>t.classList.contains('filled-correct-grid'))) document.getElementById("gridNextBtn").style.display="block";
-}
+function checkGridWin(){ const trgs = document.querySelectorAll('.checkpoint-box[style*="block"] .drop-zone[data-correct="true"]'); if([...trgs].every(t=>t.classList.contains('filled-correct-grid'))) document.getElementById("gridNextBtn").style.display="block"; }
 
 let curLvl = 0;
 function setupCode(s){
-    curLvl = s; showCP("logic-box"); document.getElementById("logic-msg").innerText="";
-    document.getElementById("logic-title").innerText=`Stage ${s}: Emergency Codes`;
+    curLvl = s; showCP("logic-box"); document.getElementById("logic-msg").innerText=""; document.getElementById("logic-title").innerText=`Stage ${s}: Emergency Codes`;
     let q = s===6 ? "Disaster/Hazmat?" : s===7 ? "Child Abduction?" : "Active Shooter?";
     document.getElementById("logic-desc").innerText="What code to activate for " + q;
     document.getElementById("logic-body").innerHTML = `<div class="rainbow-grid">` + ['Red','Orange','Yellow','Green','Blue','Pink','Silver'].map(c => `<div class="rainbow-box ri" style="background:${c.toLowerCase()==='silver'?'#c0c0c0':c.toLowerCase()}" onclick="chkC('${c}', this)">${c}</div>`).join('') + `</div>`;
@@ -314,28 +286,14 @@ function setupCode(s){
 
 function chkC(c, el){
     let win = (curLvl===6 && c==='Orange') || (curLvl===7 && c==='Pink') || (curLvl===8 && c==='Silver');
-    if(win){ 
-        document.getElementById("logic-msg").innerText="Correct! ✅"; document.getElementById("logicNextBtn").style.display="block"; 
-        document.querySelectorAll('.ri').forEach(box => box.classList.add('locked'));
-        el.classList.add('selected-correct');
-    } else { document.getElementById("logic-msg").innerText="Wrong code! ❌"; }
+    if(win){ document.getElementById("logic-msg").innerText="Correct! ✅"; document.getElementById("logicNextBtn").style.display="block"; document.querySelectorAll('.ri').forEach(box => box.classList.add('locked')); el.classList.add('selected-correct'); }
+    else { document.getElementById("logic-msg").innerText="Wrong code! ❌"; }
 }
 
 const raceData = [{c:'r', o:['Run','Remove','Rescue','Rest'], a:'Rescue', e:'🚑'},{c:'a', o:['Attack','Alert','Aim','Alarm'], a:'Alarm', e:'🔔'},{c:'c', o:['Contain','Connect','Confine','Control'], a:'Confine', e:'🚪'},{c:'e', o:['Evacuate','Exit','Extinguish','Eat'], a:'Extinguish', e:'🧯'}];
 let rStep = 0;
-function setupRace(){
-    showCP("logic-box"); document.getElementById("logic-title").innerText="Stage 5: RACE";
-    document.getElementById("logic-body").innerHTML = `<div id="rd"><div class="race-letter-box" id="rr">R</div><div class="race-letter-box" id="ra">A</div><div class="race-letter-box" id="rc">C</div><div class="race-letter-box" id="re">E</div></div><div id="ro" class="drop-grid"></div>`;
-    rStep = 0; drawRace();
-}
-function drawRace(){
-    const o = document.getElementById("ro"); o.innerHTML="";
-    if(rStep<4) raceData[rStep].o.forEach(opt => {
-        const b = document.createElement("div"); b.className="drop-zone"; b.style.cursor="pointer"; b.innerText=opt;
-        b.onclick=()=>{ if(opt===raceData[rStep].a){ document.getElementById("r"+raceData[rStep].c).innerText=raceData[rStep].e+" "+opt; rStep++; if(rStep===4) document.getElementById("logicNextBtn").style.display="block"; else drawRace();} };
-        o.appendChild(b);
-    });
-}
+function setupRace(){ showCP("logic-box"); document.getElementById("logic-title").innerText="Stage 5: RACE"; document.getElementById("logic-body").innerHTML = `<div id="rd"><div class="race-letter-box" id="rr">R</div><div class="race-letter-box" id="ra">A</div><div class="race-letter-box" id="rc">C</div><div class="race-letter-box" id="re">E</div></div><div id="ro" class="drop-grid"></div>`; rStep = 0; drawRace(); }
+function drawRace(){ const o = document.getElementById("ro"); o.innerHTML=""; if(rStep<4) raceData[rStep].o.forEach(opt => { const b = document.createElement("div"); b.className="drop-zone"; b.style.cursor="pointer"; b.innerText=opt; b.onclick=()=>{ if(opt===raceData[rStep].a){ document.getElementById("r"+raceData[rStep].c).innerText=raceData[rStep].e+" "+opt; rStep++; if(rStep===4) document.getElementById("logicNextBtn").style.display="block"; else drawRace();} }; o.appendChild(b); }); }
 </script>
 </body>
 </html>
