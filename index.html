@@ -18,7 +18,6 @@
 
         .checkpoint-box { display: none; background: white; padding: 20px 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; width: 90%; max-width: 850px; color: #1e293b; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
 
-        /* STAGE 1 SCALING */
         .diagram-wrapper { position: relative; width: 300px; height: 350px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto; }
         .part-target { position: absolute; border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 6px; font-weight: bold; text-align: center; line-height: 1; pointer-events: auto; }
         .part-target.filled-correct { background: #1e3a8a !important; color: white !important; border-color: #1e40af; pointer-events: none; }
@@ -27,7 +26,6 @@
         .choice-box-uniform { width: 130px; padding: 12px 0; background: #2563eb; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; text-align: center; font-size: 11px; touch-action: none; position: relative; pointer-events: auto; }
         .choice-box-uniform * { pointer-events: none; }
 
-        /* IPHONE STAGE 2 */
         .iphone-frame { width: 220px; height: 420px; background: #000; border-radius: 35px; border: 6px solid #334155; margin: 0 auto; position: relative; padding: 10px; }
         .iphone-notch { width: 90px; height: 18px; background: #334155; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
         .iphone-screen { background: #000; height: 100%; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -52,6 +50,8 @@
         .drop-zone { border: 2px dashed #94a3b8; border-radius: 12px; padding: 10px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; min-height: 60px; font-size: 12px; font-weight: bold; text-align: center; color: #475569;}
         .filled-correct-grid { background: #dcfce7 !important; border: 2px solid #16a34a !important; color: #166534 !important; }
         .blank-inline { display: inline-flex; width: 100px; height: 30px; border-bottom: 3px solid #3b82f6; margin: 0 5px; vertical-align: middle; justify-content: center; align-items: center; font-weight: bold; color: #1e40af; }
+        
+        .race-letter-box { padding: 10px; background: #f1f5f9; border-radius: 8px; min-width: 65px; text-align: center; font-weight: bold; font-size: 10px; border: 1px solid #cbd5e1; }
     </style>
 </head>
 <body>
@@ -307,7 +307,14 @@ function setupCode(s){
     document.getElementById("logic-title").innerText=`Stage ${s}: Emergency Codes`;
     let q = s===6 ? "Disaster/Hazmat?" : s===7 ? "Child Abduction?" : "Active Shooter?";
     document.getElementById("logic-desc").innerText="What code to activate for " + q;
-    document.getElementById("logic-body").innerHTML = `<div class="rainbow-grid">` + ['Red','Orange','Yellow','Green','Blue','Pink','Silver'].map(c => `<div class="rainbow-box ri" style="background:${c.toLowerCase()==='silver'?'#c0c0c0':c.toLowerCase()}" onclick="chkC('${c}', this)">${c}</div>`).join('') + `</div>`;
+    
+    // ADJUSTED: Silver is now #717171 (Darker Grey) and Pink is #FF1493 for visibility
+    document.getElementById("logic-body").innerHTML = `<div class="rainbow-grid">` + ['Red','Orange','Yellow','Green','Blue','Pink','Silver'].map(c => {
+        let bg = c.toLowerCase();
+        if(bg === 'silver') bg = '#717171'; // Darker Metallic Silver
+        if(bg === 'pink') bg = '#FF1493';   // Deep Pink
+        return `<div class="rainbow-box ri" style="background:${bg}" onclick="chkC('${c}', this)">${c}</div>`;
+    }).join('') + `</div>`;
 }
 
 function chkC(c, el){
@@ -319,18 +326,74 @@ function chkC(c, el){
     } else { document.getElementById("logic-msg").innerText="Wrong code! ❌"; }
 }
 
-const raceData = [{c:'r', o:['Run','Remove','Rescue','Rest'], a:'Rescue', e:'🚑'},{c:'a', o:['Attack','Alert','Aim','Alarm'], a:'Alarm', e:'🔔'},{c:'c', o:['Contain','Connect','Confine','Control'], a:'Confine', e:'🚪'},{c:'e', o:['Evacuate','Exit','Extinguish','Eat'], a:'Extinguish', e:'🧯'}];
+const raceData = [
+    {c:'r', o:['Run','Remove','Rescue','Rest'], a:['Rescue'], e:'🚑'},
+    {c:'a', o:['Attack','Alert','Aim','Alarm'], a:['Alarm'], e:'🔔'},
+    {c:'c', o:['Contain','Connect','Confine','Control'], a:['Contain', 'Confine'], e:'🛡️'},
+    {c:'e', o:['Evacuate','Exit','Extinguish','Eat'], a:['Extinguish', 'Evacuate'], e:'🏃'}
+];
 let rStep = 0;
+let selectionsInStep = [];
+
 function setupRace(){
-    showCP("logic-box"); document.getElementById("logic-title").innerText="Stage 5: RACE";
-    document.getElementById("logic-body").innerHTML = `<div id="rd"><div class="race-letter-box" id="rr">R</div><div class="race-letter-box" id="ra">A</div><div class="race-letter-box" id="rc">C</div><div class="race-letter-box" id="re">E</div></div><div id="ro" class="drop-grid"></div>`;
-    rStep = 0; drawRace();
+    showCP("logic-box"); 
+    document.getElementById("logic-title").innerText="Stage 5: RACE Protocol";
+    document.getElementById("logic-desc").innerText="Select all correct actions for each letter.";
+    document.getElementById("logic-body").innerHTML = `
+        <div id="rd" style="display:flex; justify-content:center; gap:5px; margin-bottom:15px;">
+            <div class="race-letter-box" id="rr">R</div>
+            <div class="race-letter-box" id="ra">A</div>
+            <div class="race-letter-box" id="rc">C</div>
+            <div class="race-letter-box" id="re">E</div>
+        </div>
+        <div id="ro" class="drop-grid"></div>`;
+    rStep = 0; 
+    selectionsInStep = [];
+    drawRace();
 }
+
 function drawRace(){
-    const o = document.getElementById("ro"); o.innerHTML="";
-    if(rStep<4) raceData[rStep].o.forEach(opt => {
-        const b = document.createElement("div"); b.className="drop-zone"; b.style.cursor="pointer"; b.innerText=opt;
-        b.onclick=()=>{ if(opt===raceData[rStep].a){ document.getElementById("r"+raceData[rStep].c).innerText=raceData[rStep].e+" "+opt; rStep++; if(rStep===4) document.getElementById("logicNextBtn").style.display="block"; else drawRace();} };
+    const o = document.getElementById("ro"); 
+    o.innerHTML="";
+    const current = raceData[rStep];
+    
+    document.getElementById("logic-msg").innerText = current.a.length > 1 ? 
+        `Pick ${current.a.length} correct answers for "${current.c.toUpperCase()}"` : 
+        `Pick the correct answer for "${current.c.toUpperCase()}"`;
+
+    current.o.forEach(opt => {
+        const b = document.createElement("div"); 
+        b.className="drop-zone"; 
+        b.style.cursor="pointer"; 
+        b.innerText = opt;
+        
+        if (selectionsInStep.includes(opt)) {
+            b.classList.add("filled-correct-grid");
+            b.style.pointerEvents = "none";
+        }
+
+        b.onclick = () => {
+            if (current.a.includes(opt)) {
+                if (!selectionsInStep.includes(opt)) {
+                    selectionsInStep.push(opt);
+                    b.classList.add("filled-correct-grid");
+                    
+                    if (selectionsInStep.length === current.a.length) {
+                        document.getElementById("r" + current.c).innerText = current.e + " " + current.a.join("/");
+                        rStep++;
+                        selectionsInStep = [];
+                        if (rStep === 4) {
+                            document.getElementById("logic-msg").innerText = "Protocol Complete! ✅";
+                            document.getElementById("logicNextBtn").style.display = "block";
+                        } else {
+                            drawRace();
+                        }
+                    }
+                }
+            } else {
+                document.getElementById("logic-msg").innerText = "Incorrect! Try again. ❌";
+            }
+        };
         o.appendChild(b);
     });
 }
