@@ -5,69 +5,52 @@
     <title>St. Luke's Safety Training Mission</title>
     <style>
         body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #0f172a; font-family: 'Segoe UI', sans-serif; color: #f7fafc; overflow-x: hidden; user-select: none; touch-action: none; }
-        
         #player-form-box { text-align: left; background: #1e293b; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 85%; max-width: 400px; z-index: 100; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; color: #60a5fa; margin-bottom: 5px; font-weight: bold; }
         .form-group select, .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-
-        .main-controls { width: 90%; max-width: 600px; margin-bottom: 10px; display: none; gap: 10px; align-items: center; background: #1e293b; padding: 10px; border-radius: 12px; box-sizing: border-box; }
-        #start-menu { text-align: center; background: #1e293b; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 85%; max-width: 400px; display: none; }
-        #score { font-size: 22px; font-weight: bold; color: #60a5fa; flex-grow: 1; }
-
+        .main-controls { width: 95%; max-width: 600px; margin-bottom: 10px; display: none; gap: 10px; align-items: center; background: #1e293b; padding: 10px; border-radius: 12px; box-sizing: border-box; justify-content: space-between; }
+        #score-text { font-size: 18px; font-weight: bold; color: #60a5fa; }
         #game-section { display: none; text-align: center; width: 100%; max-width: 600px; position: relative; }
         canvas { width: 95%; height: auto; border: 3px solid #334155; background-color: #020617; border-radius: 12px; cursor: crosshair; }
-
         .progress-container { width: 90%; height: 10px; background: #334155; border-radius: 10px; margin: 10px auto; overflow: hidden; }
         .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #60a5fa, #3b82f6); transition: width 0.5s ease; }
-
         .checkpoint-box { display: none; background: white; padding: 20px 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; width: 90%; max-width: 850px; color: #1e293b; max-height: 90vh; overflow-y: auto; box-sizing: border-box; z-index: 1000; }
-
         .diagram-wrapper { position: relative; width: 300px; height: 350px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto; }
         .part-target { position: absolute; border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 6px; font-weight: bold; text-align: center; line-height: 1; pointer-events: auto; }
         .part-target.filled-correct { background: #1e3a8a !important; color: white !important; border-color: #1e40af; pointer-events: none; }
-        
         .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; justify-items: center; }
-        .choice-box-uniform { width: 130px; padding: 12px 0; background: #2563eb; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; text-align: center; font-size: 11px; touch-action: none; position: relative; pointer-events: auto; }
-
-        /* IPHONE STAGE 2 */
-        .iphone-frame { width: 220px; height: 460px; background: #1c1c1e; border-radius: 40px; border: 8px solid #334155; margin: 0 auto; position: relative; padding: 10px; }
-        .iphone-notch { width: 100px; height: 20px; background: #334155; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; z-index: 10; }
+        .choice-box-uniform { width: 130px; padding: 12px 0; background: #2563eb; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; text-align: center; font-size: 11px; touch-action: none; position: relative; }
+        .iphone-frame { width: 220px; height: 450px; background: #1c1c1e; border-radius: 40px; border: 8px solid #334155; margin: 0 auto; position: relative; padding: 10px; }
         .iphone-screen { background: #000; height: 100%; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .iphone-display { color: #fff; font-size: 28px; height: 40px; margin-bottom: 20px; letter-spacing: 2px; }
+        .iphone-display { color: #fff; font-size: 24px; height: 40px; margin-bottom: 20px; letter-spacing: 2px; text-align: center; width: 100%; }
         .iphone-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .iphone-key { width: 55px; height: 55px; background: #3a3a3c; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
-        .iphone-call { width: 60px; height: 60px; background: #34c759; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; border: none; margin-top: 15px; cursor: pointer; }
+        .iphone-key { width: 50px; height: 50px; background: #3a3a3c; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
+        .iphone-call { width: 55px; height: 55px; background: #34c759; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; border: none; margin-top: 15px; cursor: pointer; }
         .calling-state { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #34c759; color: white; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 20; }
-
-        .rainbow-grid { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-top: 15px; }
-        .rainbow-box { width: 60px; height: 80px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; color: white; text-transform: uppercase; border: 2px solid transparent; }
-        .locked { pointer-events: none !important; opacity: 0.5; }
-        .selected-correct { border: 3px solid #16a34a !important; opacity: 1 !important; transform: scale(1.05); box-shadow: 0 0 10px #16a34a; }
-
-        .person-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 10px; }
-        .person-drag { font-size: 55px; cursor: grab; padding: 5px; background: white; border-radius: 50%; border: 4px solid #3b82f6; touch-action: none; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
-        .drop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .drop-zone { border: 2px dashed #94a3b8; border-radius: 12px; padding: 10px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; min-height: 60px; font-size: 11px; font-weight: bold; text-align: center; color: #475569;}
+        .person-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+        .person-drag { font-size: 55px; cursor: grab; background: white; border-radius: 50%; border: 4px solid #3b82f6; width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; touch-action: none; position: relative; z-index: 5; }
+        .drop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
+        .drop-zone { border: 2px dashed #94a3b8; border-radius: 12px; padding: 10px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; min-height: 65px; font-size: 11px; font-weight: bold; color: #475569; }
         .filled-correct-grid { background: #dcfce7 !important; border: 2px solid #16a34a !important; color: #166534 !important; }
-        .blank-inline { display: inline-flex; width: 100px; height: 30px; border-bottom: 3px solid #3b82f6; margin: 0 5px; vertical-align: middle; justify-content: center; align-items: center; font-weight: bold; color: #1e40af; }
-
+        .rainbow-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; }
+        .rainbow-box { width: 70px; height: 90px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; text-transform: uppercase; border: 3px solid transparent; transition: 0.2s; }
+        .locked { pointer-events: none !important; opacity: 0.4; filter: grayscale(0.5); }
+        .selected-correct { border: 4px solid #16a34a !important; opacity: 1 !important; filter: none !important; transform: scale(1.1); box-shadow: 0 0 15px rgba(22, 163, 74, 0.5); }
+        .race-letter-box { width: 95px; height: 95px; background: #f1f5f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10px; color: #1e293b; border: 2px solid #cbd5e1; text-align: center; padding: 4px; line-height: 1.2; }
         .btn { padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .btn-green { background: #16a34a; color: white; display: none; margin: 15px auto 0; }
-        
-        /* RACE BOX UNIFORMITY */
-        .race-letter-box { padding: 10px; background: #f1f5f9; border-radius: 8px; min-width: 80px; min-height: 70px; text-align: center; font-weight: bold; color: #1e293b; border: 1px solid #cbd5e1; font-size: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; transition: background 0.3s; }
-        .completed-box { background: #dcfce7 !important; border-color: #16a34a !important; color: #166534 !important; }
-        .code-display-box { font-family: monospace; font-size: 28px; color: #1e293b; background: #e2e8f0; padding: 15px; border-radius: 10px; margin: 20px 0; border: 2px dashed #3b82f6; letter-spacing: 2px; }
+        .btn-small { padding: 8px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; }
+        .blank-inline { display: inline-flex; width: 100px; height: 30px; border-bottom: 3px solid #3b82f6; margin: 0 5px; vertical-align: middle; justify-content: center; align-items: center; font-weight: bold; color: #1e40af; }
     </style>
 </head>
 <body>
 
     <div id="player-form-box">
-        <h2 style="color: #60a5fa; margin-top:0;">PLAYER DETAILS</h2>
+        <h2 style="color: #60a5fa; margin-top:0; text-align: center;">ST. LUKE'S SAFETY MISSION</h2>
         <div class="form-group">
             <label>I AM FROM ST. LUKE'S MEDICAL CENTER</label>
-            <select id="user-location">
+            <select id="user-location" onchange="validate()">
                 <option value="" disabled selected>Select Location</option>
                 <option value="GLOBAL CITY">GLOBAL CITY</option>
                 <option value="QUEZON CITY">QUEZON CITY</option>
@@ -76,31 +59,38 @@
             </select>
         </div>
         <div class="form-group">
-            <label>I AM PLAYER NO. (EMPLOYEE NO. | DOCTOR'S CODE | STUDENT NO.)</label>
-            <input type="text" id="user-id" placeholder="Enter ID here">
+            <label>I AM PLAYER NUMBER</label>
+            <input type="text" id="user-id" placeholder="Enter employee no. / doctor's code / student no." oninput="validate(); this.value = this.value.replace(/[^0-9]/g, '');">
         </div>
         <button class="btn" id="form-submit-btn" style="background:#3b82f6; color:white; width:100%; opacity: 0.5;" onclick="saveDetails()">PROCEED</button>
     </div>
 
-    <div id="start-menu">
+    <div id="start-menu" style="display:none; text-align: center;">
         <h1 style="color: #60a5fa;">Safety Mission</h1>
-        <p>Complete 10 Stages to become a Certified Safety Hero.</p>
+        <p id="welcome-text"></p>
         <button class="btn" style="background:#3b82f6; color:white;" onclick="startGame()">START MISSION</button>
     </div>
 
     <div class="main-controls" id="top-bar">
-        <div id="score">Score: 0</div>
-        <button onclick="location.reload()" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-size: 12px;">Reset</button>
+        <div class="hud-left">
+            <button class="btn-small" style="background:#f59e0b; color:white;" onclick="togglePause()" id="pause-btn">PAUSE</button>
+            <button class="btn-small" style="background:#ef4444; color:white;" onclick="location.reload()">EMERGENCY RESET</button>
+        </div>
+        <div class="hud-right">
+            <div id="score-text">Score: 0</div>
+            <div id="player-hud-id"></div>
+        </div>
     </div>
 
     <div id="game-section">
         <canvas id="gameCanvas"></canvas>
         <div class="progress-container"><div class="progress-fill" id="p-bar-main"></div></div>
-        <p style="color: #94a3b8; font-size: 12px;"><b>Hold SPACE or Click/Tap</b> to spray white extinguisher!</p>
+        <p style="color: #94a3b8; font-size: 12px; text-align: center;"><b>Move mouse/touch to aim and tap to spray</b></p>
     </div>
 
     <div id="quiz-section" class="checkpoint-box">
         <h3>Stage 1: Equipment Check</h3>
+        <p style="font-size: 14px;">Drag and drop parts to the fire extinguisher.</p>
         <div class="diagram-wrapper">
             <div class="part-target" data-answer="HANDLE" style="top:32px; left:158px;"></div>
             <div class="part-target" data-answer="LEVER" style="top:72px; left:168px;"></div>
@@ -115,13 +105,12 @@
 
     <div id="phone-section" class="checkpoint-box">
         <h3>Stage 2: Emergency Response</h3>
-        <p style="font-size: 14px;">Dial St. Luke's Emergency Hotline</p>
+        <p style="font-size: 14px;">Dial the St. Luke's Emergency Hotline</p>
         <div class="iphone-frame">
-            <div class="iphone-notch"></div>
             <div class="iphone-screen">
                 <div class="calling-state" id="calling-ui">
                     <div style="font-size: 40px; margin-bottom: 10px;">📞</div>
-                    <div style="font-size: 20px; font-weight: bold;">Calling...</div>
+                    <div>Calling...</div>
                 </div>
                 <div class="iphone-display" id="phone-display"></div>
                 <div class="iphone-grid">
@@ -130,25 +119,29 @@
                     <div class="iphone-key" onclick="pressKey('7')">7</div><div class="iphone-key" onclick="pressKey('8')">8</div><div class="iphone-key" onclick="pressKey('9')">9</div>
                     <div class="iphone-key" onclick="pressKey('*')">*</div><div class="iphone-key" onclick="pressKey('0')">0</div><div class="iphone-key" onclick="pressKey('#')">#</div>
                 </div>
-                <button class="iphone-call" onclick="makeCall()">📞</button>
-                <div onclick="clearPhone()" style="color:#ff3b30; font-size:11px; margin-top:10px; cursor:pointer;">DELETE</div>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <button class="iphone-call" onclick="makeCall()">📞</button>
+                    <div onclick="clearPhone()" style="color:#ff3b30; font-weight:bold; cursor:pointer; margin-top:15px; font-size:12px;">DELETE</div>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="grid-stage-section" class="checkpoint-box">
-        <h2 id="grid-title"></h2>
+        <h2 id="grid-title" style="text-align: center;"></h2>
+        <p id="grid-instr" style="font-size: 14px; margin-bottom: 10px;"></p>
         <div class="person-container">
             <div class="person-drag dr-item" id="person-logic">🚶</div>
-            <p style="font-size: 11px; font-weight: bold; color: #3b82f6; margin-top: 5px;">Drag me to Safety</p>
+            <p style="font-size: 12px; color: #3b82f6; font-weight: bold; margin-top: 5px;">Drag me to safety!</p>
         </div>
         <div class="drop-grid" id="main-drop-grid"></div>
-        <div id="grid-msg" style="margin-top:10px; font-weight:bold; font-size: 12px; color: red;"></div>
+        <div id="grid-msg" style="margin-top:10px; font-weight:bold; color: red;"></div>
         <button id="gridNextBtn" class="btn btn-green" onclick="returnToGame('grid-stage-section')">CONTINUE →</button>
     </div>
 
     <div id="pass-section" class="checkpoint-box">
         <h3>Stage 4: PASS Protocol</h3>
+        <p style="font-size: 14px;">Complete the extinguisher protocol.</p>
         <div style="text-align:left; line-height:2.2; font-size:14px; background:#f8fafc; padding:15px; border-radius:12px; color: black;">
             Pull the <span class="blank-inline t-trg" id="slot-PIN"></span>,<br>
             Aim the <span class="blank-inline t-trg" id="slot-NOZZLE"></span> at base,<br>
@@ -160,65 +153,72 @@
     </div>
 
     <div id="logic-box" class="checkpoint-box">
-        <h2 id="logic-title"></h2>
+        <h2 id="logic-title" style="text-align: center;"></h2>
         <p id="logic-desc" style="font-size: 13px;"></p>
         <div id="logic-body"></div>
-        <div id="logic-msg" style="margin-top:10px; font-weight:bold; font-size: 12px;"></div>
+        <div id="logic-msg" style="margin-top:10px; font-weight:bold;"></div>
         <button id="logicNextBtn" class="btn btn-green" onclick="returnToGame('logic-box')">CONTINUE →</button>
     </div>
 
     <div id="congrats" class="checkpoint-box">
-        <h1 style="color:#2563eb;">MISSION ACCOMPLISHED! 🏆</h1>
-        <p>Your unique verification code is:</p>
-        <div class="code-display-box" id="codeDisplay">Fetching code...</div>
-        <p style="font-size: 14px; color: #ef4444; font-weight: bold;">Step 1: Copy the code above.</p>
-        <p style="font-size: 12px; color: #64748b;">Step 2: Paste the code in the form below to receive your certificate.</p>
-        <button class="btn" style="background:#16a34a; color:white; margin-top:10px;" onclick="window.open('https://forms.gle/BVuivNGrSQjVwxNW9', '_blank')">GO TO CERTIFICATE FORM</button>
+        <h1 style="color:#2563eb; text-align: center;">MISSION ACCOMPLISHED! 🏆</h1>
+        <div style="text-align: left; font-size: 14px; padding: 15px; background: #f8fafc; border-radius: 10px; border-left: 4px solid #3b82f6; margin-bottom: 15px;">
+            <p><b>Steps to claim your certificate:</b></p>
+            <ol>
+                <li>Click <b>REVEAL MY CODE</b>. A new tab will open.</li>
+                <li><b>Copy</b> the unique verification code.</li>
+                <li>Go to the Certificate Form and <b>Paste</b> the code to finish.</li>
+            </ol>
+        </div>
+        <button class="btn" id="reveal-btn" style="background:#3b82f6; color:white; width:100%;" onclick="revealCodeRedirect()">REVEAL MY CODE</button>
     </div>
 
 <script>
-/** --- CONFIG & ENGINE --- **/
-let score = 0, gameActive = false, isSpraying = false, fires = [], particles = [], cp = Array(11).fill(false), stagesFinished = 0;
-let gStep = 0, curLvl = 0, pc = 0;
+let score = 0, gameActive = false, isSpraying = false, fires = [], particles = [], cp = Array(11).fill(false), stagesFinished = 0, isPaused = false;
+let gStep = 0, rStep = 0, rSel = [], pc = 0, playerID = "", extY = 150;
 const canvas = document.getElementById("gameCanvas"); const ctx = canvas.getContext("2d"); canvas.width = 600; canvas.height = 300;
 
 function validate() {
     const loc = document.getElementById('user-location').value;
-    const id = document.getElementById('user-id').value.trim();
+    const idInput = document.getElementById('user-id');
     const btn = document.getElementById('form-submit-btn');
-    if(loc !== "" && id !== "") { btn.style.opacity = "1"; return true; }
+    if(loc !== "" && idInput.value.trim() !== "") { btn.style.opacity = "1"; return true; }
     btn.style.opacity = "0.5"; return false;
 }
-document.getElementById('user-location').onchange = validate;
-document.getElementById('user-id').oninput = validate;
 
 function saveDetails() {
-    if(!validate()) { alert("Please enter Location and Player ID."); return; }
+    if(!validate()) return;
+    playerID = document.getElementById('user-id').value;
     document.getElementById('player-form-box').style.display = 'none';
     document.getElementById('start-menu').style.display = 'block';
+    document.getElementById('welcome-text').innerHTML = `Player No: <b>${playerID}</b><br>Reach 100 points to complete 10 stages.`;
+    document.getElementById('player-hud-id').innerText = `ID: ${playerID}`;
 }
 
 function startGame() { 
     document.getElementById("start-menu").style.display="none"; 
     document.getElementById("game-section").style.display="block"; 
     document.getElementById("top-bar").style.display="flex"; 
-    initUnifiedControls(); 
-    gameActive=true; loop(); 
+    initUnifiedControls(); gameActive=true; loop(); 
 }
 
-window.addEventListener("keydown", (e) => { if(e.code==="Space") { e.preventDefault(); isSpraying=true; } });
-window.addEventListener("keyup", (e) => { if(e.code==="Space") isSpraying=false; });
+function togglePause() { isPaused = !isPaused; document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; if(!isPaused) loop(); }
 
 function initUnifiedControls() {
-    canvas.addEventListener("pointerdown", (e) => { e.preventDefault(); isSpraying = true; e.target.setPointerCapture(e.pointerId); });
+    canvas.addEventListener("pointerdown", (e) => { if(!isPaused) isSpraying = true; });
     canvas.addEventListener("pointerup", () => isSpraying = false);
+    canvas.addEventListener("pointermove", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleY = canvas.height / rect.height;
+        extY = (e.clientY - rect.top) * scaleY - 30;
+    });
+
     let activeItem = null, shiftX, shiftY;
     document.addEventListener("pointerdown", (e) => {
         if (e.target.classList.contains("dr-item")) {
             activeItem = e.target; const rect = activeItem.getBoundingClientRect();
             shiftX = e.clientX - rect.left; shiftY = e.clientY - rect.top;
             activeItem.style.position = 'fixed'; activeItem.style.zIndex = 2000;
-            activeItem.setPointerCapture(e.pointerId);
         }
     });
     document.addEventListener("pointermove", (e) => { if (activeItem) { activeItem.style.left = e.clientX - shiftX + 'px'; activeItem.style.top = e.clientY - shiftY + 'px'; } });
@@ -232,119 +232,160 @@ function initUnifiedControls() {
     });
 }
 
-async function finishGameAndShowCode() {
-    const webAppUrl = "https://script.google.com/a/macros/stlukes.com.ph/s/AKfycby1gDiL53BjYTkekxwE9G9iNSi_cRkQF-rMQf-AwgfNVi2Atc1k8PJgCHaOC90QN338/exec";
-    document.getElementById("codeDisplay").innerText = "Generating code...";
-    try {
-        const response = await fetch(webAppUrl);
-        const uniqueCodeFromSheet = await response.text();
-        document.getElementById("codeDisplay").innerText = uniqueCodeFromSheet;
-    } catch (error) {
-        document.getElementById("codeDisplay").innerText = "Error. Please refresh.";
-    }
-}
-
 function checkCheckpoint() {
-    const s = score;
-    if (s===10 && !cp[0]) { cp[0]=true; setupS1(); }
-    else if (s===20 && !cp[1]) { cp[1]=true; showCP("phone-section"); setupS2(); }
-    else if (s===30 && !cp[2]) { cp[2]=true; setupGrid(3); }
-    else if (s===40 && !cp[3]) { cp[3]=true; setupS4(); }
-    else if (s===50 && !cp[4]) { cp[4]=true; setupS5(); }
-    else if (s===60 && !cp[5]) { cp[5]=true; setupS6(6); }
-    else if (s===70 && !cp[6]) { cp[6]=true; setupS6(7); }
-    else if (s===80 && !cp[7]) { cp[7]=true; setupS6(8); }
-    else if (s===90 && !cp[8]) { cp[8]=true; setupGrid(9); }
-    else if (s===100 && !cp[9]) { cp[9]=true; setupGrid(10); }
+    if (score === 10 && !cp[0]) { cp[0]=true; setupS1(); }
+    else if (score === 20 && !cp[1]) { cp[1]=true; showCP("phone-section"); setupS2(); }
+    else if (score === 30 && !cp[2]) { cp[2]=true; setupGrid(3); }
+    else if (score === 40 && !cp[3]) { cp[3]=true; setupS4(); }
+    else if (score === 50 && !cp[4]) { cp[4]=true; setupS5(); }
+    else if (score === 60 && !cp[5]) { cp[5]=true; setupS6(6); }
+    else if (score === 70 && !cp[6]) { cp[6]=true; setupS6(7); }
+    else if (score === 80 && !cp[7]) { cp[7]=true; setupS6(8); }
+    else if (score === 90 && !cp[8]) { cp[8]=true; setupGrid(9); }
+    else if (score === 100 && !cp[9]) { cp[9]=true; setupGrid(10); }
 }
 
-/** --- STAGE FUNCTIONS --- **/
 function setupS1() { showCP("quiz-section"); document.getElementById('s1-choices').innerHTML = ["PRESSURE GAUGE","LEVER","NOZZLE","PIN","HOSE","HANDLE"].map(c => `<div class="choice-box-uniform dr-item">${c}</div>`).join(''); }
 function setupS2() { document.getElementById("phone-display").innerText = ""; document.getElementById("calling-ui").style.display = "none"; }
-function pressKey(n){ const d=document.getElementById("phone-display"); if(d.innerText.length<4) d.innerText+=n; }
-function clearPhone(){ document.getElementById("phone-display").innerText=""; }
-function makeCall(){ if(document.getElementById("phone-display").innerText==="1111"){ document.getElementById("calling-ui").style.display="flex"; setTimeout(()=>returnToGame("phone-section"), 2000); } else { clearPhone(); } }
+function pressKey(n){ const d=document.getElementById("phone-display"); if(d.innerText.length<10) d.innerText+=n; }
+function clearPhone(){ document.getElementById("phone-display").innerText = ""; }
+function makeCall(){ 
+    const d = document.getElementById("phone-display");
+    if(d.innerText==="1111"){ 
+        document.getElementById("calling-ui").style.display="flex"; 
+        setTimeout(()=>returnToGame("phone-section"), 1500); 
+    } else { 
+        d.innerText = "Wrong Number!";
+        setTimeout(() => d.innerText = "", 1000);
+    } 
+}
 
 function setupGrid(stg){
     showCP("grid-stage-section"); const grid = document.getElementById("main-drop-grid"); grid.innerHTML = "";
-    document.getElementById("gridNextBtn").style.display="none"; document.getElementById("grid-msg").innerText=""; gStep = 0;
+    document.getElementById("gridNextBtn").style.display="none"; gStep = 0;
     let items = [];
-    if(stg===3) {
-        document.getElementById("grid-title").innerText = "Stage 3: Earthquake Logic";
-        items = [{t:"🙇 DUCK", c:true, s:0}, {t:"🏃 RUN", c:false}, {t:"🏢 LIFT", c:false}, {t:"🛡️ COVER", c:true, s:1}, {t:"🪟 WINDOW", c:false}, {t:"✊ HOLD", c:true, s:2}];
-    } else if(stg===9) {
-        document.getElementById("grid-title").innerText = "Stage 9: Quezon City Assembly Areas";
-        items = [{t:"🚗 MAB Parking Area", c:true}, {t:"🏥 Sta. Ignaciana St.", c:true}, {t:"⛪ Episcopal Church Lawn", c:true}, {t:"🍔 BGC Stopover", c:false}];
-    } else {
-        document.getElementById("grid-title").innerText = "Stage 10: Global City Assembly Areas";
-        items = [{t:"🏨 Rizal Drive Lobby", c:true}, {t:"🏢 34th Street", c:true}, {t:"🛣️ High Street", c:false}, {t:"🍔 BGC Stopover", c:false}];
+    if(stg===3) { 
+        document.getElementById("grid-title").innerText="Stage 3: Earthquake Protocol"; 
+        document.getElementById("grid-instr").innerText="Drag the person to the safety actions in order.";
+        items=[{t:"🙇 DUCK",c:true,s:0},{t:"🛡️ COVER",c:true,s:1},{t:"✊ HOLD",c:true,s:2},{t:"🏃 RUN",c:false},{t:"🏢 LIFT",c:false},{t:"🪟 WINDOW",c:false}]; 
     }
-    items.forEach(item => { const z = document.createElement("div"); z.className="drop-zone"; z.innerText=item.t; z.dataset.correct = item.c; if(item.s !== undefined) z.dataset.step = item.s; grid.appendChild(z); });
+    else if(stg===9) { 
+        document.getElementById("grid-title").innerText="Stage 9: Quezon City Assembly"; 
+        document.getElementById("grid-instr").innerText="Identify the correct assembly areas.";
+        items=[
+            {t:"🚗 MAB Parking Area",c:true},
+            {t:"🏢 Street fronting multi-level parking",c:true},
+            {t:"🏥 Sta. Ignaciana fronting SS entrance/exit",c:true},
+            {t:"🏫 Sta. Ignaciana Street fronting COM",c:true},
+            {t:"⛪ Episcopal Church and lawn",c:true},
+            {t:"🛣️ High Street",c:false}
+        ]; 
+    }
+    else { 
+        document.getElementById("grid-title").innerText="Stage 10: Global City Assembly"; 
+        document.getElementById("grid-instr").innerText="Identify the correct assembly areas.";
+        items=[
+            {t:"🏨 Rizal Drive across Main Lobby",c:true},
+            {t:"🏢 34th Street",c:true},
+            {t:"🛣️ High Street",c:false},
+            {t:"⛪ Episcopal Church Lawn",c:false},
+            {t:"🚗 MAB Parking Area",c:false},
+            {t:"🍔 BGC Stopover",c:false}
+        ]; 
+    }
+    items.forEach(i => { let z=document.createElement("div"); z.className="drop-zone"; z.innerText=i.t; z.dataset.correct=i.c; if(i.s!==undefined)z.dataset.step=i.s; grid.appendChild(z); });
 }
 
 function handleGridDrop(el, trg) {
-    if (trg.classList.contains("filled-correct-grid")) return;
-    let isSeq = document.getElementById("grid-title").innerText.includes("Earthquake");
-    if (isSeq) { if (trg.dataset.correct === "true" && parseInt(trg.dataset.step) === gStep) { trg.classList.add("filled-correct-grid"); gStep++; if(gStep === 3) document.getElementById("gridNextBtn").style.display = "block"; } else { document.getElementById("grid-msg").innerText = "Wrong Step!"; setTimeout(()=>document.getElementById("grid-msg").innerText="", 1000); }
-    } else { if (trg.dataset.correct === "true") { trg.classList.add("filled-correct-grid"); trg.innerText = "✅ " + trg.innerText; const trgs = document.querySelectorAll('.checkpoint-box[style*="block"] .drop-zone[data-correct="true"]'); if([...trgs].every(t=>t.classList.contains('filled-correct-grid'))) document.getElementById("gridNextBtn").style.display="block"; } }
-}
-
-function setupS4() { showCP("pass-section"); pc = 0; document.getElementById("pass-bank").innerHTML = ["PIN","NOZZLE","LEVER","SWEEP"].sort(()=>Math.random()-0.5).map(c => `<div class="choice-box-uniform dr-item">${c}</div>`).join(''); }
-
-// STAGE 5 RACE UNIFORM LOGIC
-const raceData = [
-    {c:'r', o:['Run','Remove','Rescue','Rest'], a:['Rescue'], e:'🚑', t:'Rescue'},
-    {c:'a', o:['Attack','Alert','Aim','Alarm'], a:['Alarm'], e:'🔔', t:'Alarm'},
-    {c:'c', o:['Contain','Connect','Confine','Control'], a:['Contain', 'Confine'], e:'🚪', t:'Contain/Confine'},
-    {c:'e', o:['Evacuate','Exit','Extinguish','Eat'], a:['Extinguish', 'Evacuate'], e:'🧯', t:'Extinguish/Evacuate'}
-];
-let rStep = 0, selectionsInStep = [];
-function setupS5() { showCP("logic-box"); document.getElementById("logic-title").innerText="Stage 5: RACE Protocol"; document.getElementById("logic-desc").innerText="Select correct actions for each letter."; rStep = 0; selectionsInStep = []; drawRace(); }
-function drawRace() {
-    const o = document.getElementById("logic-body"); 
-    o.innerHTML=`<div id="rd" style="display:flex; justify-content:center; gap:8px; margin-bottom:15px;">
-        <div class="race-letter-box" id="rr">R</div><div class="race-letter-box" id="ra">A</div>
-        <div class="race-letter-box" id="rc">C</div><div class="race-letter-box" id="re">E</div>
-    </div><div id="ro" class="drop-grid"></div>`;
-    
-    // Set already completed letters to uniform style (Emoji + Term)
-    for(let i=0; i<rStep; i++){
-        let box = document.getElementById("r" + raceData[i].c);
-        box.classList.add('completed-box');
-        box.innerHTML = `<span style="font-size:20px;">${raceData[i].e}</span><br>${raceData[i].t}`;
+    if (trg.dataset.correct === "true") { 
+        if(trg.dataset.step !== undefined && parseInt(trg.dataset.step) !== gStep) return;
+        trg.classList.add("filled-correct-grid"); gStep++; 
+        const correctOnes = document.querySelectorAll('.checkpoint-box[style*="block"] .drop-zone[data-correct="true"]');
+        if(correctOnes.length === gStep) document.getElementById("gridNextBtn").style.display="block"; 
     }
-
-    const container = document.getElementById("ro"); const current = raceData[rStep];
-    document.getElementById("logic-msg").innerText = current.a.length > 1 ? `Pick ${current.a.length} for "${current.c.toUpperCase()}"` : `Pick for "${current.c.toUpperCase()}"`;
-    current.o.forEach(opt => { 
-        const b = document.createElement("div"); b.className="drop-zone"; b.style.cursor="pointer"; b.innerText = opt; 
-        if (selectionsInStep.includes(opt)) b.classList.add("filled-correct-grid");
-        b.onclick = () => { if (current.a.includes(opt)) { if (!selectionsInStep.includes(opt)) { selectionsInStep.push(opt); b.classList.add("filled-correct-grid"); if (selectionsInStep.length === current.a.length) { 
-            rStep++; selectionsInStep = []; if (rStep === 4) { 
-                let box = document.getElementById("re"); box.classList.add('completed-box'); box.innerHTML = `<span style="font-size:20px;">🧯</span><br>Extinguish/Evacuate`;
-                document.getElementById("logic-msg").innerText = "Protocol Complete! ✅"; document.getElementById("logicNextBtn").style.display = "block"; 
-            } else { drawRace(); } } } } else { document.getElementById("logic-msg").innerText = "Incorrect! ❌"; } }; container.appendChild(b); });
 }
 
-function setupS6(s) { curLvl = s; showCP("logic-box"); document.getElementById("logic-msg").innerText=""; document.getElementById("logicNextBtn").style.display="none"; document.getElementById("logic-title").innerText=`Stage ${s}: Emergency Codes`; let q = s===6 ? "Disaster/Hazmat?" : s===7 ? "Child Abduction?" : "Active Shooter?"; document.getElementById("logic-desc").innerText="What code for " + q; document.getElementById("logic-body").innerHTML = `<div class="rainbow-grid">` + ['Red','Orange','Yellow','Green','Blue','Pink','Silver'].map(c => { let bg = c.toLowerCase(); if(bg==='silver') bg='#717171'; if(bg==='pink') bg='#FF1493'; return `<div class="rainbow-box ri" style="background:${bg}" onclick="chkC('${c}', this)">${c}</div>`; }).join('') + `</div>`; }
-function chkC(c, el) { let win = (curLvl===6 && c==='Orange') || (curLvl===7 && c==='Pink') || (curLvl===8 && c==='Silver'); if(win) { document.getElementById("logic-msg").innerText="Correct! ✅"; document.getElementById("logicNextBtn").style.display="block"; document.querySelectorAll('.ri').forEach(box => box.classList.add('locked')); el.classList.add('selected-correct'); } else { document.getElementById("logic-msg").innerText="Wrong code! ❌"; } }
+function setupS4() { showCP("pass-section"); pc=0; document.getElementById("pass-bank").innerHTML=["PIN","NOZZLE","LEVER","SWEEP"].sort(()=>Math.random()-0.5).map(c=>`<div class="choice-box-uniform dr-item">${c}</div>`).join(''); }
+
+function setupS5() { showCP("logic-box"); document.getElementById("logic-title").innerText="Stage 5: RACE Protocol"; rStep=0; rSel=[]; drawRace(); }
+
+function drawRace() {
+    const raceData = [
+        {l:'R', t:'Rescue 🚑', a:['Rescue 🚑'], opts: ['Rescue 🚑', 'Run 🏃', 'Remove 🗑️', 'Rest 💤']},
+        {l:'A', t:'Alarm 🔔', a:['Alarm 🔔'], opts: ['Alarm 🔔', 'Attack 👊', 'Alert 🚨', 'Aim 🎯']},
+        {l:'C', t:'Contain/Confine 🛡️', a:['Contain 🛡️', 'Confine 🔒'], opts: ['Contain 🛡️', 'Confine 🔒', 'Connect 🔗', 'Connect 🖇️']},
+        {l:'E', t:'Extinguish/Evacuate 🏃', a:['Extinguish 🧯', 'Evacuate 🏃'], opts: ['Extinguish 🧯', 'Evacuate 🏃', 'Eat 🍎', 'Exit 🚪']}
+    ];
+    const o=document.getElementById("logic-body"); 
+    o.innerHTML=`<div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">`+raceData.map(r=>`<div class="race-letter-box" id="r${r.l}">${r.l}</div>`).join('')+`</div><div id="ro" class="drop-grid"></div>`;
+    for(let i=0; i<rStep; i++){ let b=document.getElementById("r"+raceData[i].l); b.classList.add('completed-box'); b.innerText=raceData[i].t; }
+    if(rStep===4){ document.getElementById("logicNextBtn").style.display="block"; document.getElementById("logic-msg").innerText="Correct! ✅"; return; }
+    const current = raceData[rStep];
+    document.getElementById("logic-msg").innerText = `Pick answer(s) for "${current.l}" (${current.a.length})`;
+    current.opts.sort(()=>Math.random()-0.5).forEach(opt => {
+        let b = document.createElement("div"); b.className = "drop-zone"; b.style.cursor = "pointer"; b.innerText = opt;
+        if(rSel.includes(opt)) b.classList.add('filled-correct-grid');
+        b.onclick = () => {
+            if(current.a.includes(opt)) {
+                if(!rSel.includes(opt)) { rSel.push(opt); b.classList.add('filled-correct-grid'); if(rSel.length === current.a.length) { rStep++; rSel=[]; drawRace(); } }
+            } else { document.getElementById("logic-msg").innerText=""; }
+        };
+        document.getElementById("ro").appendChild(b);
+    });
+}
+
+function setupS6(s) { 
+    curLvl=s; showCP("logic-box"); document.getElementById("logicNextBtn").style.display="none"; 
+    document.getElementById("logic-msg").innerText="";
+    let title="", q="", winC="", colors=['Red','Orange','Yellow','Green','Blue','Pink','Silver'];
+    if(s===6){title="Stage 6: Code Activation";q="What Code do you activate in case of Fire, Chemical Spill, Radiation or Gas Leak, Earthquake, Flood?";winC="Orange";}
+    if(s===7){title="Stage 7: Code Activation";q="What code do you activate for Child Abduction?";winC="Pink";}
+    if(s===8){title="Stage 8: Code Activation";q="What code do you activate for an Active Shooter?";winC="Silver";}
+    document.getElementById("logic-title").innerText=title; document.getElementById("logic-desc").innerText=q; 
+    document.getElementById("logic-body").innerHTML=`<div class="rainbow-grid">`+colors.map(c=>{
+        let bg=c.toLowerCase(); if(bg==='silver')bg='#717171'; if(bg==='pink')bg='#FF1493';
+        return `<div class="rainbow-box ri" style="background:${bg}" onclick="chkC('${c}', '${winC}', this)">${c}</div>`;
+    }).join('')+`</div>`;
+}
+
+function chkC(c, winC, el) {
+    if(c === winC) {
+        el.classList.add('selected-correct'); 
+        document.getElementById('logicNextBtn').style.display='block';
+        document.getElementById("logic-msg").innerText="Correct! ✅";
+        document.querySelectorAll('.ri').forEach(box => { if(box !== el) box.classList.add('locked'); });
+    }
+}
 
 function showCP(id) { gameActive=false; document.getElementById("game-section").style.display="none"; document.getElementById(id).style.display="block"; }
-function returnToGame(id) { stagesFinished++; document.getElementById("p-bar-main").style.width=(stagesFinished/10*100)+"%"; if(stagesFinished===10){ document.getElementById(id).style.display="none"; finishGameAndShowCode(); document.getElementById("congrats").style.display="block"; return; } document.getElementById(id).style.display="none"; document.getElementById("game-section").style.display="block"; fires=[]; gameActive=true; loop(); }
+function returnToGame(id) { 
+    stagesFinished++; document.getElementById("p-bar-main").style.width=(stagesFinished/10*100)+"%"; 
+    if(stagesFinished===10){document.getElementById(id).style.display="none";document.getElementById("congrats").style.display="block";return;} 
+    document.getElementById(id).style.display="none"; document.getElementById("game-section").style.display="block"; fires=[]; gameActive=true; loop(); 
+}
 
 function update() {
-    if (!gameActive) return;
-    if (isSpraying) for(let i=0;i<5;i++) particles.push({x:90,y:220,vx:6+Math.random()*3,vy:(Math.random()-0.5)*3,life:20,size:4+Math.random()*6});
+    if (!gameActive || isPaused) return;
+    if (isSpraying) for(let i=0;i<5;i++) particles.push({x:90,y:extY+25,vx:7,vy:(Math.random()-0.5)*4,life:25,size:5});
     for(let i=particles.length-1;i>=0;i--){particles[i].x+=particles[i].vx; particles[i].y+=particles[i].vy; if(--particles[i].life<=0)particles.splice(i,1);}
-    if(Math.random()<0.02) fires.push({x:600,y:230}); 
+    if(Math.random()<0.03) fires.push({x:600,y:100+Math.random()*150}); 
     for(let i=fires.length-1;i>=0;i--){ 
-        fires[i].x -= 1.8; 
-        particles.forEach(p=>{ if(fires[i]&&p.x>fires[i].x && p.x<fires[i].x+40){ fires.splice(i,1); score++; document.getElementById("score").innerText="Score: "+score; checkCheckpoint(); } });
-        if(fires[i] && fires[i].x < 90) { fires.splice(i,1); if(score > 0) score--; document.getElementById("score").innerText="Score: "+score; }
+        fires[i].x -= 2; 
+        particles.forEach(p=>{ if(fires[i]&&p.x>fires[i].x && Math.abs(p.y-(fires[i].y+20))<45){ fires.splice(i,1); score++; document.getElementById("score-text").innerText="Score: "+score; checkCheckpoint(); } });
+        if(fires[i] && fires[i].x < 50) { fires.splice(i,1); if(score > 0) score--; document.getElementById("score-text").innerText="Score: "+score; }
     }
 }
-function draw(){ ctx.clearRect(0,0,600,300); ctx.fillStyle="#1e293b"; ctx.fillRect(0,270,600,30); ctx.fillStyle="#ffffff"; particles.forEach(p=>{ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();}); ctx.fillStyle="#ef4444"; ctx.fillRect(50,200,40,60); ctx.font="35px Arial"; fires.forEach(f=>ctx.fillText("🔥",f.x,f.y+30)); }
-function loop(){ if(gameActive){update(); draw(); requestAnimationFrame(loop);} }
+function draw(){ 
+    ctx.clearRect(0,0,600,300); ctx.fillStyle="#1e293b"; ctx.fillRect(0,280,600,20);
+    ctx.fillStyle="#e2e8f0"; particles.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();});
+    ctx.fillStyle="#ef4444"; ctx.fillRect(50,extY,35,60); ctx.fillStyle="#334155"; ctx.fillRect(45,extY,45,10);
+    ctx.font="35px Arial"; fires.forEach(f=>ctx.fillText("🔥",f.x,f.y+30)); 
+}
+function loop(){ if(gameActive && !isPaused){update(); draw(); requestAnimationFrame(loop);} }
+
+function revealCodeRedirect() {
+    window.open("https://script.google.com/a/macros/stlukes.com.ph/s/AKfycbzcqiGztCFof_d6KkI0lKw8UTtFfJZ0RSVFI8WbiuCGtbXYXeCv9hqtipcvAhQPpV3O/exec", "_blank");
+}
 </script>
 </body>
 </html>
