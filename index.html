@@ -2,81 +2,70 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BEPADCT: Blaze Buster Minigame</title>
+    <title>Blaze Buster - St. Luke's Mission</title>
     <style>
-        body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #0f172a; font-family: 'Segoe UI', sans-serif; color: #f7fafc; overflow-x: hidden; user-select: none; touch-action: none; }
+        body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #0f172a; font-family: 'Segoe UI', sans-serif; color: #f7fafc; overflow: hidden; touch-action: none; user-select: none; }
         
-        /* Initial Screen & Form Styles */
-        #pre-game-box, #player-form-box { text-align: center; background: #1e293b; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 85%; max-width: 400px; z-index: 100; }
-        #player-form-box { text-align: left; display: none; }
+        #pre-game-box, #player-form-box, #start-menu, .checkpoint-box { 
+            text-align: center; background: #1e293b; padding: 30px; border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 85%; max-width: 450px; z-index: 100; 
+        }
+        #player-form-box, #start-menu, #game-section, .checkpoint-box { display: none; }
 
-        .form-group { margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; text-align: left; }
         .form-group label { display: block; font-size: 12px; color: #60a5fa; margin-bottom: 5px; font-weight: bold; }
         .form-group select, .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+
+        .play-icon-btn, .buster-character { font-size: 100px; cursor: pointer; animation: buster-bounce 2s infinite ease-in-out; display: inline-block; }
+        @keyframes buster-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
         
-        .main-controls { width: 95%; max-width: 600px; margin-bottom: 10px; display: none; gap: 10px; align-items: center; background: #1e293b; padding: 10px; border-radius: 12px; box-sizing: border-box; justify-content: space-between; }
-        #score-text { font-size: 18px; font-weight: bold; color: #60a5fa; }
-        
-        #game-section { display: none; text-align: center; width: 100%; max-width: 600px; position: relative; }
-        canvas { width: 95%; height: auto; border: 3px solid #334155; background-color: #020617; border-radius: 12px; cursor: crosshair; }
-        
-        .progress-container { width: 90%; height: 10px; background: #334155; border-radius: 10px; margin: 10px auto; overflow: hidden; }
-        .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #60a5fa, #3b82f6); transition: width 0.5s ease; }
-        
-        /* Buster Animation Styles */
-        .buster-intro-container { text-align: center; perspective: 1000px; padding: 20px; }
-        .buster-character { font-size: 80px; display: inline-block; animation: buster-bounce 2s infinite ease-in-out; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
-        @keyframes buster-bounce {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-20px) rotate(-5deg); }
-            75% { transform: translateY(-10px) rotate(5deg); }
-        }
-        .speech-bubble { background: #ffffff; color: #1e293b; padding: 20px; border-radius: 15px; margin: 20px auto; max-width: 300px; position: relative; font-weight: bold; box-shadow: 0 10px 20px rgba(0,0,0,0.2); opacity: 0; transform: scale(0.8); transition: all 0.5s ease; }
-        .speech-bubble.active { opacity: 1; transform: scale(1); }
+        .speech-bubble { background: #ffffff; color: #1e293b; padding: 20px; border-radius: 15px; margin: 20px auto; position: relative; font-weight: bold; }
         .speech-bubble:after { content: ''; position: absolute; bottom: -15px; left: 50%; border-width: 15px 15px 0; border-style: solid; border-color: #ffffff transparent; display: block; width: 0; margin-left: -15px; }
 
-        /* Checkpoint & Quiz Styles */
-        .checkpoint-box { display: none; background: white; padding: 20px 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; width: 90%; max-width: 850px; color: #1e293b; max-height: 90vh; overflow-y: auto; box-sizing: border-box; z-index: 1000; }
-        .diagram-wrapper { position: relative; width: 300px; height: 350px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto; }
-        .part-target { position: absolute; border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 6px; font-weight: bold; text-align: center; line-height: 1; pointer-events: auto; }
-        .part-target.filled-correct { background: #1e3a8a !important; color: white !important; border-color: #1e40af; pointer-events: none; }
+        .main-controls { width: 95%; max-width: 800px; margin-bottom: 10px; display: none; gap: 10px; align-items: center; background: #1e293b; padding: 10px; border-radius: 12px; justify-content: space-between; z-index: 10; }
+        canvas { width: 100%; height: auto; border: 4px solid #334155; background-color: #55b5d9; border-radius: 12px; cursor: crosshair; touch-action: none; }
+        .progress-container { width: 90%; height: 10px; background: #334155; border-radius: 10px; margin: 10px auto; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #60a5fa, #3b82f6); transition: width 0.3s; }
         
-        .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; justify-items: center; }
-        .choice-box-uniform { width: 130px; padding: 12px 0; background: #2563eb; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; text-align: center; font-size: 11px; touch-action: none; position: relative; }
-        
-        /* Stage Specifics */
-        .iphone-frame { width: 220px; height: 430px; background: #1c1c1e; border-radius: 40px; border: 8px solid #334155; margin: 0 auto; position: relative; padding: 10px; }
-        .iphone-screen { background: #000; height: 100%; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .iphone-display { color: #fff; font-size: 24px; height: 40px; margin-bottom: 20px; letter-spacing: 2px; text-align: center; width: 100%; }
-        .iphone-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .iphone-key { width: 50px; height: 50px; background: #3a3a3c; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
-        .iphone-call { width: 55px; height: 55px; background: #34c759; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; border: none; margin-top: 15px; cursor: pointer; }
-        .calling-state { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #34c759; color: white; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 20; }
-        
-        .person-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
-        .person-drag { font-size: 55px; cursor: grab; background: white; border-radius: 50%; border: 4px solid #3b82f6; width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; touch-action: none; position: relative; z-index: 5; }
-        .drop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
-        .drop-zone { border: 2px dashed #94a3b8; border-radius: 12px; padding: 10px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; min-height: 65px; font-size: 11px; font-weight: bold; color: #475569; }
+        #major-blaze-box { display: none; color: #ef4444; padding: 10px; border-radius: 10px; position: absolute; top: 250px; left: 50%; transform: translateX(-50%); z-index: 50; text-align: center; }
+        #final-meter-container { width: 150px; height: 12px; background: #334155; border-radius: 6px; overflow: hidden; margin: 5px auto; border: 1px solid white; }
+        #final-meter-fill { width: 100%; height: 100%; background: #ef4444; }
+
+        .checkpoint-box { background: white; color: #1e293b; max-height: 90vh; overflow-y: auto; }
+        .diagram-wrapper { position: relative; width: 280px; height: 320px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto; }
+        .part-target { position: absolute; border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 6px; }
+        .filled-correct { background: #1e3a8a !important; color: white !important; }
+        .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+        .choice-box-uniform { padding: 12px; background: #2563eb; color: white; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .drop-zone { border: 2px dashed #94a3b8; border-radius: 10px; padding: 10px; background: #f1f5f9; min-height: 50px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         .filled-correct-grid { background: #dcfce7 !important; border: 2px solid #16a34a !important; color: #166534 !important; }
         
-        .rainbow-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; }
-        .rainbow-box { width: 70px; height: 90px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; text-transform: uppercase; border: 3px solid transparent; transition: 0.2s; }
-        .locked { pointer-events: none !important; opacity: 0.4; filter: grayscale(0.5); }
-        .selected-correct { border: 4px solid #16a34a !important; opacity: 1 !important; filter: none !important; transform: scale(1.1); box-shadow: 0 0 15px rgba(22, 163, 74, 0.5); }
-        
-        .race-letter-box { width: 95px; height: 95px; background: #f1f5f9; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10px; color: #1e293b; border: 2px solid #cbd5e1; text-align: center; padding: 4px; line-height: 1.2; }
-        .btn { padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; }
-        .btn:hover { transform: scale(1.05); }
-        .btn-green { background: #16a34a; color: white; display: none; margin: 15px auto 0; }
-        .btn-small { padding: 8px 12px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; border: none; }
-        .blank-inline { display: inline-flex; width: 100px; height: 30px; border-bottom: 3px solid #3b82f6; margin: 0 5px; vertical-align: middle; justify-content: center; align-items: center; font-weight: bold; color: #1e40af; }
+        .iphone-frame { width: 180px; height: 350px; background: #1c1c1e; border-radius: 30px; border: 6px solid #334155; margin: 0 auto; position: relative; padding: 10px; }
+        .iphone-screen { background: #000; height: 100%; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .iphone-display { color: #fff; font-size: 18px; margin-bottom: 15px; min-height: 24px; text-align: center; width: 100%; }
+        .iphone-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .iphone-key { width: 38px; height: 38px; background: #3a3a3c; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .iphone-call { width: 45px; height: 45px; background: #34c759; color: white; border-radius: 50%; border: none; margin-top: 10px; cursor: pointer; }
+
+        .btn { padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; background: #3b82f6; color: white; width: 100%; margin-top: 10px; }
+        .btn-green { background: #16a34a; display: none; }
+        .rainbow-grid { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; padding: 10px 0; width: 100%; }
+        .rainbow-box { width: 52px; height: 70px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; color: white; text-transform: uppercase; flex-shrink: 0; }
+        .race-letter-box { width: 85px; height: 85px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 9px; border: 2px solid #cbd5e1; }
+        .blank-inline { display: inline-flex; width: 80px; height: 25px; border-bottom: 2px solid #3b82f6; margin: 0 5px; vertical-align: middle; color: #2563eb; font-weight: bold; justify-content: center; align-items: center; }
+        .slot-correct { background: #dcfce7; border-bottom: 2px solid #16a34a; color: #166534; }
+
+        /* Bonus Round Styles */
+        .bonus-btn { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; cursor: pointer; color: white; border: 8px solid rgba(255,255,255,0.3); transition: 0.2s; }
+        .bonus-btn:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
 
     <div id="pre-game-box">
-        <h1 style="color: #60a5fa; margin-bottom: 30px;">BEPADCT: Blaze Buster Minigame</h1>
-        <button class="btn" style="background:#3b82f6; color:white; font-size: 24px; padding: 20px 60px;" onclick="showForm()">PLAY</button>
+        <h1 style="color: #60a5fa; margin-bottom: 10px;">Blaze Buster</h1>
+        <div class="play-icon-btn" onclick="showForm()">🧯</div>
+        <div style="color: #ef4444; font-weight: bold; margin-top: 15px;">TAP BUSTER TO START</div>
     </div>
 
     <div id="player-form-box">
@@ -93,45 +82,36 @@
         </div>
         <div class="form-group">
             <label>I AM PLAYER NUMBER</label>
-            <input type="text" id="user-id" placeholder="Enter employee no. / doctor's code / student no." oninput="validate(); this.value = this.value.replace(/[^0-9]/g, '');">
+            <input type="text" id="user-id" placeholder="Enter employee no. / doctor's code / student no" oninput="validate(); this.value = this.value.replace(/[^0-9]/g, '');">
         </div>
-        <button class="btn" id="form-submit-btn" style="background:#3b82f6; color:white; width:100%; opacity: 0.5;" onclick="saveDetails()">PROCEED</button>
+        <button class="btn" id="form-submit-btn" style="opacity: 0.5;" onclick="saveDetails()">PROCEED</button>
     </div>
 
-    <div id="start-menu" style="display:none; text-align: center;">
-        <div class="buster-intro-container">
-            <div class="buster-character">🧯</div>
-            <div id="buster-bubble" class="speech-bubble">
-                Halt! I'm Buster, your Fire Safety Partner!
-            </div>
-            <div id="story-text" style="margin-bottom: 20px; color: #94a3b8; font-style: italic; min-height: 40px;">
-                Emergency alarms are sounding across the hospital...
-            </div>
-            <button class="btn" id="story-btn" style="background:#3b82f6; color:white;" onclick="nextStoryStep()">NEXT</button>
-            <button class="btn" id="start-mission-btn" style="background:#16a34a; color:white; display:none;" onclick="startGame()">IGNITE MISSION!</button>
-        </div>
+    <div id="start-menu">
+        <div class="buster-character" style="font-size: 80px;">🧯</div>
+        <div id="buster-bubble" class="speech-bubble">Wait! You're the new safety recruit, right?</div>
+        <div id="story-text" style="color: #94a3b8; font-style: italic; font-size: 14px; margin-bottom: 15px;">Buster looks you up and down...</div>
+        <button class="btn" id="story-btn" onclick="nextStoryStep()">NEXT</button>
+        <button class="btn" id="start-mission-btn" style="background:#16a34a; display:none;" onclick="startGame()">IGNITE MISSION!</button>
     </div>
 
     <div class="main-controls" id="top-bar">
-        <div class="hud-left">
-            <button class="btn-small" style="background:#f59e0b; color:white;" onclick="togglePause()" id="pause-btn">PAUSE</button>
-            <button class="btn-small" style="background:#ef4444; color:white;" onclick="location.reload()">EMERGENCY RESET</button>
-        </div>
-        <div class="hud-right">
-            <div id="score-text">Score: 0</div>
-            <div id="player-hud-id" style="font-size: 10px; color: #94a3b8;"></div>
-        </div>
+        <div id="status-text" style="color: #60a5fa; font-weight: bold;">Extinguished: 0</div>
+        <div id="wave-text" style="color: #fbbf24; font-weight: bold;">Wave 1/10</div>
     </div>
 
     <div id="game-section">
+        <div id="major-blaze-box">
+            <div style="font-weight: bold; background: rgba(0,0,0,0.7); padding: 5px; border-radius: 5px;">⚠️ MEGA BLAZE ⚠️</div>
+            <div id="final-meter-container"><div id="final-meter-fill"></div></div>
+        </div>
         <canvas id="gameCanvas"></canvas>
         <div class="progress-container"><div class="progress-fill" id="p-bar-main"></div></div>
-        <p style="color: #94a3b8; font-size: 12px; text-align: center;"><b>Move mouse/touch to aim and tap to spray</b></p>
     </div>
 
     <div id="quiz-section" class="checkpoint-box">
         <h3>Stage 1: Equipment Check</h3>
-        <p style="font-size: 14px;">Drag and drop parts to the fire extinguisher.</p>
+        <p style="font-size: 13px;">Drag parts to the extinguisher.</p>
         <div class="diagram-wrapper">
             <div class="part-target" data-answer="HANDLE" style="top:32px; left:158px;"></div>
             <div class="part-target" data-answer="LEVER" style="top:72px; left:168px;"></div>
@@ -146,13 +126,9 @@
 
     <div id="phone-section" class="checkpoint-box">
         <h3>Stage 2: Emergency Response</h3>
-        <p style="font-size: 14px;">Dial the St. Luke's Emergency Hotline</p>
+        <p style="font-size: 13px;">Dial the Emergency Hotline (1111)</p>
         <div class="iphone-frame">
             <div class="iphone-screen">
-                <div class="calling-state" id="calling-ui">
-                    <div style="font-size: 40px; margin-bottom: 10px;">📞</div>
-                    <div>Calling...</div>
-                </div>
                 <div class="iphone-display" id="phone-display"></div>
                 <div class="iphone-grid">
                     <div class="iphone-key" onclick="pressKey('1')">1</div><div class="iphone-key" onclick="pressKey('2')">2</div><div class="iphone-key" onclick="pressKey('3')">3</div>
@@ -160,30 +136,25 @@
                     <div class="iphone-key" onclick="pressKey('7')">7</div><div class="iphone-key" onclick="pressKey('8')">8</div><div class="iphone-key" onclick="pressKey('9')">9</div>
                     <div class="iphone-key" onclick="pressKey('*')">*</div><div class="iphone-key" onclick="pressKey('0')">0</div><div class="iphone-key" onclick="pressKey('#')">#</div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <button class="iphone-call" onclick="makeCall()">📞</button>
-                    <div onclick="clearPhone()" style="color:#ff3b30; font-weight:bold; cursor:pointer; margin-top:15px; font-size:12px;">DELETE</div>
-                </div>
+                <button class="iphone-call" onclick="makeCall()">📞</button>
             </div>
         </div>
     </div>
 
     <div id="grid-stage-section" class="checkpoint-box">
-        <h2 id="grid-title" style="text-align: center;"></h2>
-        <p id="grid-instr" style="font-size: 14px; margin-bottom: 10px;"></p>
-        <div class="person-container">
-            <div class="person-drag dr-item" id="person-logic">🚶</div>
-            <p style="font-size: 12px; color: #3b82f6; font-weight: bold; margin-top: 5px;">Drag me to safety!</p>
+        <h2 id="grid-title"></h2>
+        <p id="grid-instr" style="font-size: 13px;"></p>
+        <div style="margin: 15px 0;">
+            <div class="dr-item" id="person-logic" style="font-size:45px; cursor:grab; border:2px solid #3b82f6; display:inline-block; padding:10px; border-radius:50%; background:white; touch-action:none;">🚶</div>
+            <div style="font-size: 10px; color: #2563eb; font-weight: bold; margin-top: 5px;">Drag me to safety</div>
         </div>
-        <div class="drop-grid" id="main-drop-grid"></div>
-        <div id="grid-msg" style="margin-top:10px; font-weight:bold; color: red;"></div>
+        <div class="choice-grid" id="main-drop-grid"></div>
         <button id="gridNextBtn" class="btn btn-green" onclick="returnToGame('grid-stage-section')">CONTINUE →</button>
     </div>
 
     <div id="pass-section" class="checkpoint-box">
         <h3>Stage 4: PASS Protocol</h3>
-        <p style="font-size: 14px;">Complete the extinguisher protocol.</p>
-        <div style="text-align:left; line-height:2.2; font-size:14px; background:#f8fafc; padding:15px; border-radius:12px; color: black;">
+        <div style="text-align:left; font-size:13px; background:#f8fafc; padding:15px; border-radius:12px; color:black; line-height:2;">
             Pull the <span class="blank-inline t-trg" id="slot-PIN"></span>,<br>
             Aim the <span class="blank-inline t-trg" id="slot-NOZZLE"></span> at base,<br>
             Squeeze the <span class="blank-inline t-trg" id="slot-LEVER"></span>,<br>
@@ -194,266 +165,345 @@
     </div>
 
     <div id="logic-box" class="checkpoint-box">
-        <h2 id="logic-title" style="text-align: center;"></h2>
-        <p id="logic-desc" style="font-size: 13px;"></p>
+        <h2 id="logic-title"></h2>
         <div id="logic-body"></div>
-        <div id="logic-msg" style="margin-top:10px; font-weight:bold;"></div>
         <button id="logicNextBtn" class="btn btn-green" onclick="returnToGame('logic-box')">CONTINUE →</button>
     </div>
 
-    <div id="congrats" class="checkpoint-box">
-        <h1 style="color:#2563eb; text-align: center;">MISSION ACCOMPLISHED! 🏆</h1>
-        <div style="text-align: left; font-size: 14px; padding: 10px; background: #f8fafc; border-radius: 10px; border-left: 4px solid #3b82f6; margin-bottom: 15px;">
-            <p><b>Steps to claim your certificate:</b></p>
-            <ol>
-                <li>Click <b>REVEAL MY CODE</b>. A new tab will open in your browser.</li>
-                <li><b>Copy</b> the unique verification code displayed in that tab.</li>
-                <li>Complete the form and <b>Paste</b> the code in the required field to verify your mission completion.</li>
-            </ol>
+    <div id="bonus-round-box" class="checkpoint-box">
+        <h2 style="color:#fbbf24;">BONUS ROUND</h2>
+        <p style="font-size: 14px; font-weight: bold; margin-bottom: 20px;">
+            BLACK TAGS - (immediate) are used to label those who cannot survive without immediate treatment but who have a chance of survival.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
+            <div class="bonus-btn" style="background-color: #16a34a;" onclick="checkBonus(true)">TRUE</div>
+            <div class="bonus-btn" style="background-color: #ef4444;" onclick="checkBonus(false)">FALSE</div>
         </div>
-        <button class="btn" id="reveal-btn" style="background:#3b82f6; color:white; width:100%;" onclick="revealCodeRedirect()">REVEAL MY CODE</button>
+        <div id="bonus-msg" style="margin-top:20px; font-weight:bold;"></div>
+    </div>
+
+    <div id="congrats" class="checkpoint-box">
+        <h1 style="color:#2563eb;">MISSION ACCOMPLISHED! 🏆</h1>
+        <div style="text-align: left; font-size: 13px; padding: 10px; background: #f8fafc; border-radius: 10px; border-left: 4px solid #3b82f6; margin-bottom: 15px;">
+            <p>1. Click <b>REVEAL MY CODE</b>.<br>2. <b>Copy</b> the code from the new tab.<br>3. <b>Paste</b> it into your verification form.</p>
+        </div>
+        <button class="btn" style="background:#3b82f6;" onclick="revealCodeRedirect()">REVEAL MY CODE</button>
     </div>
 
 <script>
-let score = 0, gameActive = false, isSpraying = false, fires = [], particles = [], cp = Array(11).fill(false), stagesFinished = 0, isPaused = false;
-let gStep = 0, rStep = 0, rSel = [], pc = 0, playerID = "", extY = 150;
-const canvas = document.getElementById("gameCanvas"); const ctx = canvas.getContext("2d"); canvas.width = 600; canvas.height = 300;
-
-// STORY VARIABLES
-let storyIndex = 0;
-const storySteps = [
-    { bubble: "Wait! You're the new safety recruit, right?", narrative: "Buster looks you up and down with his pressure gauge eye." },
-    { bubble: "The hospital is under a 'Blaze Alert'. Small fires are popping up!", narrative: "You hear the distant sound of Code Orange alarms." },
-    { bubble: "I've got the foam, but I need your hands to aim. Teamwork saves lives!", narrative: "Buster shakes with excitement (and high-pressure gas)." },
-    { bubble: "To stop the spread, we need 100 points. Are you ready?", narrative: "The mission is clear: Protect St. Luke's at all costs." }
-];
-
-function showForm() {
-    document.getElementById('pre-game-box').style.display = 'none';
-    document.getElementById('player-form-box').style.display = 'block';
-}
-
-function validate() {
-    const loc = document.getElementById('user-location').value;
-    const idInput = document.getElementById('user-id');
-    const btn = document.getElementById('form-submit-btn');
-    if(loc !== "" && idInput.value.trim() !== "") { btn.style.opacity = "1"; return true; }
-    btn.style.opacity = "0.5"; return false;
-}
-
-function saveDetails() {
-    if(!validate()) return;
-    playerID = document.getElementById('user-id').value;
-    document.getElementById('player-form-box').style.display = 'none';
-    document.getElementById('start-menu').style.display = 'block';
-    document.getElementById('player-hud-id').innerText = `ID: ${playerID}`;
+    let gameActive = false, isSpraying = false, particles = [], fires = [];
+    let currentScore = 0, totalExtinguished = 0, wavesCleared = 0;
+    let extY = 150, targetY = 150, bgOffset = 0, playerID = "";
+    let majorBlazeActive = false, bossHealth = 100, bossX = 1000;
+    const totalWavesNeeded = 10;
+    const scrollSpeed = 3;
     
-    setTimeout(() => {
-        document.getElementById('buster-bubble').classList.add('active');
-    }, 500);
-}
+    let gStep = 0, rStep = 0, pcCount = 0;
+    let raceSelections = [];
 
-function nextStoryStep() {
-    if (storyIndex < storySteps.length) {
-        const bubble = document.getElementById('buster-bubble');
-        const narrative = document.getElementById('story-text');
-        bubble.classList.remove('active');
-        
-        setTimeout(() => {
-            bubble.innerText = storySteps[storyIndex].bubble;
-            narrative.innerText = storySteps[storyIndex].narrative;
-            bubble.classList.add('active');
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 800; canvas.height = 350;
+
+    const storySteps = [
+        { bubble: "Wait! You're the new safety recruit, right?", narrative: "Buster looks you up and down with his pressure gauge eye." },
+        { bubble: "The hospital is under a 'Blaze Alert'. Small fires are popping up!", narrative: "You hear the distant sound of Code Orange alarms." },
+        { bubble: "I've got the foam, but I need your hands to aim. Teamwork saves lives!", narrative: "Buster shakes with excitement (and high-pressure gas)." },
+        { bubble: "To stop the spread, we need 100 points. Are you ready?", narrative: "The mission is clear: Protect St. Luke's at all costs." }
+    ];
+    let storyIndex = 0;
+
+    function showForm() { document.getElementById('pre-game-box').style.display = 'none'; document.getElementById('player-form-box').style.display = 'block'; }
+    function validate() {
+        const loc = document.getElementById('user-location').value;
+        const id = document.getElementById('user-id').value.trim();
+        document.getElementById('form-submit-btn').style.opacity = (loc && id) ? "1" : "0.5";
+    }
+    function saveDetails() {
+        if(document.getElementById('form-submit-btn').style.opacity !== "1") return;
+        playerID = document.getElementById('user-id').value;
+        document.getElementById('player-form-box').style.display = 'none';
+        document.getElementById('start-menu').style.display = 'block';
+    }
+    function nextStoryStep() {
+        if(storyIndex < storySteps.length) {
+            document.getElementById('buster-bubble').innerText = storySteps[storyIndex].bubble;
+            document.getElementById('story-text').innerText = storySteps[storyIndex].narrative;
             storyIndex++;
-            if (storyIndex === storySteps.length) {
+            if(storyIndex === storySteps.length) {
                 document.getElementById('story-btn').style.display = 'none';
                 document.getElementById('start-mission-btn').style.display = 'inline-block';
             }
-        }, 300);
-    }
-}
-
-function startGame() { 
-    document.getElementById("start-menu").style.display="none"; 
-    document.getElementById("game-section").style.display="block"; 
-    document.getElementById("top-bar").style.display="flex"; 
-    initUnifiedControls(); gameActive=true; loop(); 
-}
-
-function togglePause() { isPaused = !isPaused; document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE"; if(!isPaused) loop(); }
-
-function initUnifiedControls() {
-    canvas.addEventListener("pointerdown", (e) => { if(!isPaused) isSpraying = true; });
-    canvas.addEventListener("pointerup", () => isSpraying = false);
-    canvas.addEventListener("pointermove", (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const scaleY = canvas.height / rect.height;
-        extY = (e.clientY - rect.top) * scaleY - 30;
-    });
-
-    let activeItem = null, shiftX, shiftY;
-    document.addEventListener("pointerdown", (e) => {
-        if (e.target.classList.contains("dr-item")) {
-            activeItem = e.target; const rect = activeItem.getBoundingClientRect();
-            shiftX = e.clientX - rect.left; shiftY = e.clientY - rect.top;
-            activeItem.style.position = 'fixed'; activeItem.style.zIndex = 2000;
-            activeItem.setPointerCapture(e.pointerId);
         }
-    });
-    document.addEventListener("pointermove", (e) => { if (activeItem) { activeItem.style.left = e.clientX - shiftX + 'px'; activeItem.style.top = e.clientY - shiftY + 'px'; } });
-    document.addEventListener("pointerup", (e) => {
-        if (!activeItem) return;
-        activeItem.style.visibility = 'hidden'; const target = document.elementFromPoint(e.clientX, e.clientY); activeItem.style.visibility = 'visible';
-        if (target && target.classList.contains("part-target") && target.dataset.answer === activeItem.innerText) { target.innerText = activeItem.innerText; target.classList.add("filled-correct"); activeItem.style.display = "none"; if (document.querySelectorAll('.checkpoint-box[style*="block"] .filled-correct').length === 6) document.getElementById("quizReturnBtn").style.display = "block"; }
-        if (target && target.classList.contains("drop-zone")) handleGridDrop(activeItem, target);
-        if (target && target.classList.contains("t-trg") && target.id === "slot-"+activeItem.innerText) { target.innerText = activeItem.innerText; target.style.border = "none"; activeItem.style.display = "none"; pc++; if(pc===4) document.getElementById("passReturnBtn").style.display = "block"; }
-        activeItem.style.position = 'static'; activeItem = null;
-    });
-}
-
-function checkCheckpoint() {
-    if (score === 10 && !cp[0]) { cp[0]=true; setupS1(); }
-    else if (score === 20 && !cp[1]) { cp[1]=true; showCP("phone-section"); setupS2(); }
-    else if (score === 30 && !cp[2]) { cp[2]=true; setupGrid(3); }
-    else if (score === 40 && !cp[3]) { cp[3]=true; setupS4(); }
-    else if (score === 50 && !cp[4]) { cp[4]=true; setupS5(); }
-    else if (score === 60 && !cp[5]) { cp[5]=true; setupS6(6); }
-    else if (score === 70 && !cp[6]) { cp[6]=true; setupS6(7); }
-    else if (score === 80 && !cp[7]) { cp[7]=true; setupS6(8); }
-    else if (score === 90 && !cp[8]) { cp[8]=true; setupGrid(9); }
-    else if (score === 100 && !cp[9]) { cp[9]=true; setupGrid(10); }
-}
-
-function setupS1() { showCP("quiz-section"); document.getElementById('s1-choices').innerHTML = ["PRESSURE GAUGE","LEVER","NOZZLE","PIN","HOSE","HANDLE"].map(c => `<div class="choice-box-uniform dr-item">${c}</div>`).join(''); }
-function setupS2() { document.getElementById("phone-display").innerText = ""; document.getElementById("calling-ui").style.display = "none"; }
-function pressKey(n){ const d=document.getElementById("phone-display"); if(d.innerText.length<4) d.innerText+=n; }
-function clearPhone(){ document.getElementById("phone-display").innerText = ""; }
-function makeCall(){ 
-    const d = document.getElementById("phone-display");
-    if(d.innerText==="1111"){ 
-        document.getElementById("calling-ui").style.display="flex"; 
-        setTimeout(()=>returnToGame("phone-section"), 1500); 
-    } else { 
-        d.innerText = "Wrong Number!";
-        setTimeout(() => d.innerText = "", 1000);
-    } 
-}
-
-function setupGrid(stg){
-    showCP("grid-stage-section"); const grid = document.getElementById("main-drop-grid"); grid.innerHTML = "";
-    document.getElementById("gridNextBtn").style.display="none"; gStep = 0;
-    let items = [];
-    if(stg===3) { 
-        document.getElementById("grid-title").innerText="Stage 3: Earthquake Protocol"; 
-        document.getElementById("grid-instr").innerText="Drag the person to the safety actions in order.";
-        items=[{t:"🙇 DUCK",c:true,s:0},{t:"🛡️ COVER",c:true,s:1},{t:"✊ HOLD",c:true,s:2},{t:"🏃 RUN",c:false},{t:"🏢 LIFT",c:false},{t:"🪟 WINDOW",c:false}]; 
     }
-    else if(stg===9) { 
-        document.getElementById("grid-title").innerText="Stage 9: Quezon City Assembly"; 
-        document.getElementById("grid-instr").innerText="Identify the correct assembly areas.";
-        items=[{t:"🚗 MAB Parking Area",c:true},{t:"🏢 Street fronting multi-level parking",c:true},{t:"🏥 Sta. Ignaciana fronting SS entrance/exit",c:true},{t:"🏫 Sta. Ignaciana Street fronting COM",c:true},{t:"⛪ Episcopal Church and lawn",c:true},{t:"🛣️ High Street",c:false}]; 
+
+    function startGame() {
+        document.getElementById('start-menu').style.display = 'none';
+        document.getElementById('game-section').style.display = 'block';
+        document.getElementById('top-bar').style.display = 'flex';
+        gameActive = true;
+        initControls();
+        setInterval(spawnFire, 1500);
+        requestAnimationFrame(loop);
     }
-    else { 
-        document.getElementById("grid-title").innerText="Stage 10: Global City Assembly"; 
-        document.getElementById("grid-instr").innerText="Identify the correct assembly areas.";
-        items=[{t:"🏨 Rizal Drive across Main Lobby",c:true},{t:"🏢 34th Street",c:true},{t:"🛣️ High Street",c:false},{t:"⛪ Episcopal Church Lawn",c:false},{t:"🚗 MAB Parking Area",c:false},{t:"🍔 BGC Stopover",c:false}]; 
+
+    function drawRepeatingBackground(offset) {
+        for (let x = offset % 800 - 800; x < canvas.width + 800; x += 800) {
+            ctx.fillStyle = "#55b5d9"; ctx.fillRect(x, 0, 800, 280); 
+            ctx.fillStyle = "#e0eaf1"; ctx.fillRect(x, 0, 800, 40);
+            ctx.fillStyle = "#ced9e1"; ctx.fillRect(x, 280, 800, 70);
+            ctx.fillStyle = "#ffffff"; ctx.fillRect(x, 40, 800, 8);
+            ctx.fillStyle = "#ffffff"; ctx.fillRect(x, 220, 800, 10);
+            ctx.fillStyle = "#1e4e79"; ctx.fillRect(x, 230, 800, 40);
+            ctx.fillStyle = "#ffffff"; ctx.fillRect(x, 270, 800, 5);
+            ctx.fillStyle = "#b1b9bf"; ctx.fillRect(x + 50, 80, 110, 190);
+            ctx.fillStyle = "#cbd5e1"; ctx.fillRect(x + 55, 85, 100, 185);
+            ctx.fillStyle = "#94a3b8"; ctx.fillRect(x + 103, 85, 4, 185);
+            ctx.fillStyle = "#6b1c23"; ctx.fillRect(x + 90, 80, 30, 5);
+            ctx.fillStyle = "#cbd5e1"; ctx.fillRect(x + 165, 130, 15, 30);
+            ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(x + 172, 138, 3, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(x + 172, 152, 3, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#e6a15c"; ctx.fillRect(x + 280, 80, 85, 190);
+            ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.strokeRect(x + 280, 80, 85, 190);
+            ctx.fillStyle = "silver"; ctx.fillRect(x + 288, 155, 8, 40);
+            ctx.fillStyle = "white"; ctx.fillRect(x + 420, 85, 120, 80);
+            ctx.strokeStyle = "#e6a15c"; ctx.strokeRect(x + 420, 85, 120, 80);
+            ctx.fillStyle = "#4a90e2"; ctx.beginPath(); ctx.arc(x + 500, 115, 15, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#333"; ctx.fillRect(x + 430, 100, 40, 3); ctx.fillRect(x + 430, 110, 40, 3); ctx.fillRect(x + 430, 120, 40, 3);
+            ctx.fillStyle = "#f5b741"; ctx.fillRect(x + 410, 225, 140, 45);
+            ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2; ctx.strokeRect(x + 410, 225, 140, 45);
+            ctx.fillStyle = "#333"; ctx.fillRect(x + 420, 270, 5, 10); ctx.fillRect(x + 535, 270, 5, 10);
+            ctx.fillStyle = "#e6a15c"; ctx.fillRect(x + 650, 80, 85, 190);
+            ctx.strokeStyle = "white"; ctx.strokeRect(x + 650, 80, 85, 190);
+            ctx.fillStyle = "silver"; ctx.fillRect(x + 658, 155, 8, 40);
+            ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(x + 30, 100, 25, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = "#999"; ctx.stroke();
+            ctx.fillStyle = "#333"; ctx.fillRect(x + 28, 90, 4, 12); ctx.fillRect(x + 30, 98, 10, 4);
+        }
     }
-    items.sort(()=>Math.random()-0.5).forEach(i => { let z=document.createElement("div"); z.className="drop-zone"; z.innerText=i.t; z.dataset.correct=i.c; if(i.s!==undefined)z.dataset.step=i.s; grid.appendChild(z); });
-}
 
-function handleGridDrop(el, trg) {
-    if (trg.dataset.correct === "true") { 
-        if(trg.dataset.step !== undefined && parseInt(trg.dataset.step) !== gStep) return;
-        trg.classList.add("filled-correct-grid"); gStep++; 
-        if(document.querySelectorAll('.checkpoint-box[style*="block"] .drop-zone[data-correct="true"]').length === gStep) document.getElementById("gridNextBtn").style.display="block"; 
+    function spawnFire() {
+        if(majorBlazeActive || !gameActive) return;
+        fires.push({ x: canvas.width + 50, y: 80 + Math.random() * 160, size: 45 + Math.random() * 25, alive: true });
     }
-}
 
-function setupS4() { showCP("pass-section"); pc=0; document.getElementById("pass-bank").innerHTML=["PIN","NOZZLE","LEVER","SWEEP"].sort(()=>Math.random()-0.5).map(c=>`<div class="choice-box-uniform dr-item">${c}</div>`).join(''); }
-
-function setupS5() { 
-    showCP("logic-box"); document.getElementById("logic-title").innerText="Stage 5: RACE Protocol"; 
-    rStep=0; rSel=[]; drawRace(); 
-}
-
-function drawRace() {
-    const raceData = [
-        {l:'R', t:'Rescue 🚑', a:['Rescue 🚑'], opts: ['Rescue 🚑', 'Run 🏃', 'Remove 🗑️', 'Rest 💤']},
-        {l:'A', t:'Alarm 🔔', a:['Alarm 🔔'], opts: ['Alarm 🔔', 'Attack 👊', 'Alert 🚨', 'Aim 🎯']},
-        {l:'C', t:'Contain/Confine 🛡️', a:['Contain 🛡️', 'Confine 🔒'], opts: ['Contain 🛡️', 'Confine 🔒', 'Connect 🔗', 'Cover 🙊']},
-        {l:'E', t:'Extinguish/Evacuate 🏃', a:['Extinguish 🧯', 'Evacuate 🏃'], opts: ['Extinguish 🧯', 'Evacuate 🏃', 'Eat 🍎', 'Exit 🚪']}
-    ];
-    const o=document.getElementById("logic-body"); 
-    o.innerHTML=`<div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">`+raceData.map(r=>`<div class="race-letter-box" id="r${r.l}">${r.l}</div>`).join('')+`</div><div id="ro" class="drop-grid"></div>`;
-    
-    for(let i=0; i<rStep; i++){ let b=document.getElementById("r"+raceData[i].l); b.style.backgroundColor="#dcfce7"; b.innerText=raceData[i].t; }
-    if(rStep===4){ document.getElementById("logicNextBtn").style.display="block"; document.getElementById("logic-msg").innerText="Correct! ✅"; return; }
-    
-    const current = raceData[rStep];
-    document.getElementById("logic-msg").innerText = `Pick answer(s) for "${current.l}" (${current.a.length})`;
-    current.opts.sort(()=>Math.random()-0.5).forEach(opt => {
-        let b = document.createElement("div"); b.className = "drop-zone"; b.style.cursor = "pointer"; b.innerText = opt;
-        if(rSel.includes(opt)) b.classList.add('filled-correct-grid');
-        b.onclick = () => {
-            if(current.a.includes(opt)) {
-                if(!rSel.includes(opt)) { rSel.push(opt); b.classList.add('filled-correct-grid'); if(rSel.length === current.a.length) { rStep++; rSel=[]; drawRace(); } }
-            }
+    function initControls() {
+        const handleMove = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            targetY = (clientY - rect.top) * (canvas.height / rect.height) - 35;
         };
-        document.getElementById("ro").appendChild(b);
-    });
-}
+        canvas.addEventListener("mousedown", () => isSpraying = true);
+        canvas.addEventListener("mouseup", () => isSpraying = false);
+        canvas.addEventListener("mousemove", handleMove);
+        canvas.addEventListener("touchstart", (e) => { e.preventDefault(); isSpraying = true; handleMove(e); });
+        canvas.addEventListener("touchend", () => isSpraying = false);
+        canvas.addEventListener("touchmove", (e) => { e.preventDefault(); handleMove(e); });
 
-function setupS6(s) { 
-    showCP("logic-box"); document.getElementById("logicNextBtn").style.display="none"; 
-    document.getElementById("logic-msg").innerText="";
-    let title="", q="", winC="", colors=['Red','Orange','Yellow','Green','Blue','Pink','Silver'];
-    if(s===6){title="Stage 6: Code Activation";q="What Code do you activate in case of Fire, Chemical Spill, Radiation or Gas Leak, Earthquake, Flood?";winC="Orange";}
-    if(s===7){title="Stage 7: Code Activation";q="What code do you activate for Child Abduction?";winC="Pink";}
-    if(s===8){title="Stage 8: Code Activation";q="What code do you activate for an Active Shooter?";winC="Silver";}
-    document.getElementById("logic-title").innerText=title; document.getElementById("logic-desc").innerText=q; 
-    document.getElementById("logic-body").innerHTML=`<div class="rainbow-grid">`+colors.map(c=>{
-        let bg=c.toLowerCase(); if(bg==='silver')bg='#717171'; if(bg==='pink')bg='#FF1493';
-        return `<div class="rainbow-box ri" style="background:${bg}" onclick="chkC('${c}', '${winC}', this)">${c}</div>`;
-    }).join('')+`</div>`;
-}
-
-function chkC(c, winC, el) {
-    if(c === winC) {
-        el.classList.add('selected-correct'); 
-        document.getElementById('logicNextBtn').style.display='block';
-        document.getElementById("logic-msg").innerText="Correct! ✅";
-        document.querySelectorAll('.ri').forEach(box => { if(box !== el) box.classList.add('locked'); });
+        let activeItem = null, shiftX, shiftY;
+        document.addEventListener("pointerdown", (e) => {
+            if (e.target.classList.contains("dr-item")) {
+                activeItem = e.target; const rect = activeItem.getBoundingClientRect();
+                shiftX = rect.width / 2;
+                shiftY = rect.height / 2;
+                activeItem.style.position = 'fixed'; activeItem.style.zIndex = 2000;
+                activeItem.setPointerCapture(e.pointerId);
+            }
+        });
+        document.addEventListener("pointermove", (e) => { if (activeItem) { activeItem.style.left = e.clientX - shiftX + 'px'; activeItem.style.top = e.clientY - shiftY + 'px'; } });
+        document.addEventListener("pointerup", (e) => {
+            if (!activeItem) return;
+            activeItem.style.visibility = 'hidden'; const target = document.elementFromPoint(e.clientX, e.clientY); activeItem.style.visibility = 'visible';
+            if (target && target.classList.contains("part-target") && target.dataset.answer === activeItem.innerText) {
+                target.innerText = activeItem.innerText; target.classList.add("filled-correct"); activeItem.style.display = "none";
+                if (document.querySelectorAll('#quiz-section .filled-correct').length === 6) document.getElementById("quizReturnBtn").style.display = "block";
+            }
+            if (target && target.classList.contains("drop-zone")) handleGridDrop(activeItem, target);
+            if (target && target.classList.contains("t-trg") && target.id === "slot-"+activeItem.innerText) {
+                target.innerText = activeItem.innerText; target.classList.add("slot-correct"); activeItem.style.display = "none";
+                pcCount++; if(pcCount===4) document.getElementById("passReturnBtn").style.display = "block";
+            }
+            activeItem.style.position = 'static'; activeItem = null;
+        });
     }
-}
 
-function showCP(id) { gameActive=false; document.getElementById("game-section").style.display="none"; document.getElementById(id).style.display="block"; }
-function returnToGame(id) { 
-    stagesFinished++; document.getElementById("p-bar-main").style.width=(stagesFinished/10*100)+"%"; 
-    if(stagesFinished===10){document.getElementById(id).style.display="none";document.getElementById("congrats").style.display="block";return;} 
-    document.getElementById(id).style.display="none"; document.getElementById("game-section").style.display="block"; fires=[]; gameActive=true; loop(); 
-}
+    function update() {
+        if (!gameActive) return;
+        extY += (targetY - extY) * 0.1;
+        let speed = (majorBlazeActive && bossX <= 550) ? 0 : scrollSpeed;
+        bgOffset -= speed;
+        fires.forEach((f, i) => { f.x -= speed; if(f.x < -100) fires.splice(i, 1); });
 
-function update() {
-    if (!gameActive || isPaused) return;
-    if (isSpraying) for(let i=0;i<5;i++) particles.push({x:90,y:extY+25,vx:7,vy:(Math.random()-0.5)*4,life:25,size:5});
-    for(let i=particles.length-1;i>=0;i--){particles[i].x+=particles[i].vx; particles[i].y+=particles[i].vy; if(--particles[i].life<=0)particles.splice(i,1);}
-    if(Math.random()<0.03) fires.push({x:600,y:100+Math.random()*150}); 
-    for(let i=fires.length-1;i>=0;i--){ 
-        fires[i].x -= 2; 
-        particles.forEach(p=>{ if(fires[i]&&p.x>fires[i].x && Math.abs(p.y-(fires[i].y+20))<45){ fires.splice(i,1); score++; document.getElementById("score-text").innerText="Score: "+score; checkCheckpoint(); } });
-        if(fires[i] && fires[i].x < 50) { fires.splice(i,1); if(score > 0) score--; document.getElementById("score-text").innerText="Score: "+score; }
+        if(isSpraying) for(let i=0; i<3; i++) particles.push({x: 120, y: extY + 45, vx: 11 + Math.random()*5, vy: (Math.random()-0.5)*4, life: 25});
+
+        particles.forEach((p, pi) => {
+            p.x += p.vx; p.y += p.vy; p.life--;
+            if(p.life <= 0) particles.splice(pi, 1);
+            fires.forEach(f => {
+                if(f.alive && Math.abs(p.x - f.x) < 40 && Math.abs(p.y - f.y) < 45) {
+                    f.alive = false; totalExtinguished++; currentScore++; updateHUD();
+                    if(currentScore >= 9 && !majorBlazeActive) triggerMajorBlaze();
+                }
+            });
+            if(majorBlazeActive && bossX <= 550 && Math.abs(p.x - bossX) < 100 && Math.abs(p.y - 200) < 120) {
+                bossHealth -= 1.5; document.getElementById('final-meter-fill').style.width = bossHealth + "%";
+                if(bossHealth <= 0) { 
+                    totalExtinguished++; updateHUD(); majorBlazeActive = false; triggerCheckpoint(); 
+                }
+            }
+        });
+        if(majorBlazeActive && bossX > 550) bossX -= 4;
     }
-}
-function draw(){ 
-    ctx.clearRect(0,0,600,300); ctx.fillStyle="#1e293b"; ctx.fillRect(0,280,600,20);
-    ctx.fillStyle="#e2e8f0"; particles.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();});
-    ctx.fillStyle="#ef4444"; ctx.fillRect(50,extY,35,60); ctx.fillStyle="#334155"; ctx.fillRect(45,extY,45,10);
-    ctx.font="35px Arial"; fires.forEach(f=>ctx.fillText("🔥",f.x,f.y+30)); 
-}
-function loop(){ if(gameActive && !isPaused){update(); draw(); requestAnimationFrame(loop);} }
 
-function revealCodeRedirect() {
-    window.open("https://script.google.com/a/macros/stlukes.com.ph/s/AKfycbzcqiGztCFof_d6KkI0lKw8UTtFfJZ0RSVFI8WbiuCGtbXYXeCv9hqtipcvAhQPpV3O/exec", "_blank");
-}
+    function triggerMajorBlaze() { majorBlazeActive = true; bossHealth = 100; bossX = 900; document.getElementById('major-blaze-box').style.display = 'block'; }
+
+    function triggerCheckpoint() {
+        gameActive = false; currentScore = 0;
+        document.getElementById('game-section').style.display = 'none';
+        document.getElementById('major-blaze-box').style.display = 'none';
+        const wave = wavesCleared + 1;
+        if(wave === 1) setupS1();
+        else if(wave === 2) setupS2();
+        else if(wave === 3) setupGrid(3);
+        else if(wave === 4) setupS4();
+        else if(wave === 5) setupS5();
+        else if(wave === 6) setupS6(6);
+        else if(wave === 7) setupS6(7);
+        else if(wave === 8) setupS6(8);
+        else if(wave === 9) setupGrid(9);
+        else if(wave === 10) setupGrid(10);
+    }
+
+    function returnToGame(id) {
+        document.getElementById(id).style.display = 'none';
+        wavesCleared++;
+        document.getElementById('p-bar-main').style.width = (wavesCleared / 10 * 100) + "%";
+        if(wavesCleared >= 10) { document.getElementById('bonus-round-box').style.display = 'block'; return; }
+        document.getElementById('game-section').style.display = 'block';
+        gameActive = true; updateHUD(); requestAnimationFrame(loop);
+    }
+
+    function checkBonus(isTrue) {
+        let msg = document.getElementById("bonus-msg");
+        if(!isTrue) { // The answer is FALSE
+            msg.style.color = "#16a34a";
+            msg.innerText = "Correct! ✅ Black tags are for deceased/expectant.";
+            setTimeout(() => {
+                document.getElementById('bonus-round-box').style.display = 'none';
+                document.getElementById('congrats').style.display = 'block';
+            }, 2000);
+        } else {
+            msg.style.color = "#ef4444";
+            msg.innerText = "Incorrect! ❌ Try again.";
+        }
+    }
+
+    function setupS1() { document.getElementById('quiz-section').style.display = 'block'; document.getElementById('s1-choices').innerHTML = ["PRESSURE GAUGE","LEVER","NOZZLE","PIN","HOSE","HANDLE"].map(c => `<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); }
+    function setupS2() { document.getElementById('phone-section').style.display = 'block'; document.getElementById("phone-display").innerText = ""; }
+    function pressKey(n){ const d=document.getElementById("phone-display"); if(d.innerText.length<10) d.innerText+=n; }
+    function makeCall() { 
+        const d = document.getElementById("phone-display");
+        if(d.innerText === "1111") { d.innerText = "Calling....."; setTimeout(() => returnToGame('phone-section'), 2000); } else { d.innerText = ""; } 
+    }
+
+    function setupGrid(stg){
+        document.getElementById("grid-stage-section").style.display = 'block';
+        const grid = document.getElementById("main-drop-grid"); grid.innerHTML = "";
+        document.getElementById("gridNextBtn").style.display="none"; gStep = 0;
+        let items = [];
+        if(stg===3) { 
+            document.getElementById("grid-title").innerText="Stage 3: Earthquake Protocol"; 
+            document.getElementById("grid-instr").innerText="Drag the person to the safety actions in order.";
+            items=[{t:"🙇 DUCK",c:true,s:0},{t:"🛡️ COVER",c:true,s:1},{t:"✊ HOLD",c:true,s:2},{t:"🏃 RUN",c:false},{t:"🏢 LIFT",c:false},{t:"🪟 WINDOW",c:false}]; 
+        } else if(stg===9) {
+            document.getElementById("grid-title").innerText="Stage 9: Quezon City Assembly"; 
+            document.getElementById("grid-instr").innerText="Identify the correct assembly areas.";
+            items=[{t:"🚗 MAB Parking Area",c:true},{t:"🏢 Street fronting multi-level parking",c:true},{t:"🏥 Sta. Ignaciana fronting SS entrance/exit",c:true},{t:"🏫 Sta. Ignaciana Street fronting COM",c:true},{t:"⛪ Episcopal Church and lawn",c:true},{t:"🛣️ High Street",c:false}];
+        } else {
+            document.getElementById("grid-title").innerText="Stage 10: Global City Assembly"; 
+            document.getElementById("grid-instr").innerText="Identify the correct assembly areas.";
+            items=[{t:"🏨 Rizal Drive across Main Lobby",c:true},{t:"🏢 34th Street",c:true},{t:"🛣️ High Street",c:false},{t:"⛪ Episcopal Church Lawn",c:false},{t:"🚗 MAB Parking Area",c:false},{t:"🍔 BGC Stopover",c:false}];
+        }
+        items.forEach(i => {
+            let z=document.createElement("div"); z.className="drop-zone"; z.innerText=i.t; z.dataset.correct=i.c; if(i.s!==undefined)z.dataset.step=i.s; grid.appendChild(z);
+        });
+    }
+
+    function handleGridDrop(el, trg) {
+        if (trg.dataset.correct === "true") {
+            if(trg.dataset.step !== undefined && parseInt(trg.dataset.step) !== gStep) return;
+            trg.classList.add("filled-correct-grid"); gStep++;
+            if(document.querySelectorAll('.checkpoint-box[style*="block"] .drop-zone[data-correct="true"]').length === gStep) document.getElementById("gridNextBtn").style.display="block";
+        }
+    }
+
+    function setupS4() { 
+        document.getElementById("pass-section").style.display = 'block'; pcCount=0; document.getElementById("passReturnBtn").style.display = "none";
+        document.querySelectorAll(".t-trg").forEach(el => {el.innerText = ""; el.classList.remove("slot-correct");});
+        document.getElementById("pass-bank").innerHTML=["PIN","NOZZLE","LEVER","SWEEP"].sort(()=>Math.random()-0.5).map(c=>`<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); 
+    }
+
+    function setupS5() { 
+        document.getElementById("logic-box").style.display = 'block'; document.getElementById("logic-title").innerText="Stage 5: RACE Protocol"; rStep=0; raceSelections = []; drawRace(); 
+    }
+    function drawRace() {
+        const raceData = [
+            {l:'R', t:'Rescue 🚑', a:['Rescue 🚑'], opts: ['Rescue 🚑', 'Run 🏃', 'Remove 🗑️', 'Rest 💤']},
+            {l:'A', t:'Alarm 🔔', a:['Alarm 🔔'], opts: ['Alarm 🔔', 'Attack 👊', 'Alert 🚨', 'Aim 🎯']},
+            {l:'C', t:'Contain & Confine 🛡️', a:['Contain 🛡️', 'Confine 🔒'], opts: ['Contain 🛡️', 'Confine 🔒', 'Connect 🔗', 'Cover 🙊']},
+            {l:'E', t:'Extinguish & Evacuate 🏃', a:['Extinguish 🧯', 'Evacuate 🏃'], opts: ['Extinguish 🧯', 'Evacuate 🏃', 'Eat 🍎', 'Exit 🚪']}
+        ];
+        const o=document.getElementById("logic-body"); o.innerHTML=`<div style="display:flex; justify-content:center; gap:5px; margin-bottom:15px;">`+raceData.map(r=>`<div class="race-letter-box" id="r${r.l}">${r.l}</div>`).join('')+`</div><div id="logic-msg" style="margin-bottom:10px; font-weight:bold; font-size:12px;"></div><div class="choice-grid" id="ro"></div>`;
+        for(let i=0; i<rStep; i++){ let b=document.getElementById("r"+raceData[i].l); b.style.backgroundColor="#dcfce7"; b.innerText=raceData[i].t; }
+        if(rStep===4){ document.getElementById("logicNextBtn").style.display="block"; return; }
+        const current = raceData[rStep];
+        document.getElementById("logic-msg").innerText = `${current.l}: ${current.a.length > 1 ? "(Choose 2 Answers)" : ""}`;
+        let optionsToShow = [...current.a];
+        let pool = current.opts.filter(opt => !current.a.includes(opt));
+        while(optionsToShow.length < 4) optionsToShow.push(pool.shift());
+        optionsToShow.sort(() => Math.random() - 0.5).forEach(opt => {
+            let b = document.createElement("div"); b.className = "choice-box-uniform"; 
+            if(raceSelections.includes(opt)) b.style.background = "#16a34a";
+            b.innerText = opt;
+            b.onclick = () => { 
+                if(current.a.includes(opt) && !raceSelections.includes(opt)) {
+                    raceSelections.push(opt);
+                    if(raceSelections.length === current.a.length) { rStep++; raceSelections = []; drawRace(); } else { b.style.background = "#16a34a"; }
+                }
+            };
+            document.getElementById("ro").appendChild(b);
+        });
+    }
+
+    function setupS6(s) {
+        document.getElementById("logic-box").style.display = 'block'; document.getElementById("logicNextBtn").style.display="none";
+        let winC="", instr="", colors=['Red','Orange','Yellow','Green','Blue','Pink','Silver'];
+        if(s===6) { instr="Fire, Chemical Spill, Radiation, Earthquake, or Flood?"; winC="Orange"; }
+        else if(s===7) { instr="Child Abduction?"; winC="Pink"; }
+        else { instr="Active Shooter?"; winC="Silver"; }
+        document.getElementById("logic-title").innerText="Stage " + s + ": Code Activation";
+        document.getElementById("logic-body").innerHTML=`<p style="font-size:12px; margin-bottom:10px;">${instr}</p><div class="rainbow-grid">`+colors.map(c=>{
+            let bg=c.toLowerCase(); if(bg==='silver')bg='#717171'; if(bg==='pink')bg='#FF1493';
+            return `<div class="rainbow-box" style="background:${bg}" onclick="if('${c}'==='${winC}') { document.getElementById('logicNextBtn').style.display='block'; this.style.outline='3px solid black'; }">${c}</div>`;
+        }).join('')+`</div>`;
+    }
+
+    function updateHUD() {
+        document.getElementById('status-text').innerText = `Extinguished: ${totalExtinguished}`;
+        document.getElementById('wave-text').innerText = `Wave ${wavesCleared + 1}/10`;
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawRepeatingBackground(bgOffset);
+        ctx.font = "80px Arial"; ctx.fillText("🧯", 40, extY + 70);
+        ctx.fillStyle = "white"; particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2); ctx.fill(); });
+        fires.forEach(f => { if(f.alive) { ctx.font = f.size + "px Arial"; ctx.fillText("🔥", f.x, f.y); } });
+        if(majorBlazeActive) { ctx.font = "200px Arial"; ctx.shadowBlur = 20; ctx.shadowColor = "yellow"; ctx.fillText("🔥", bossX, 240); ctx.shadowBlur = 0; }
+    }
+
+    function loop() { if(gameActive) { update(); draw(); requestAnimationFrame(loop); } }
+    function revealCodeRedirect() { window.open("https://script.google.com/a/macros/stlukes.com.ph/s/AKfycbzcqiGztCFof_d6KkI0lKw8UTtFfJZ0RSVFI8WbiuCGtbXYXeCv9hqtipcvAhQPpV3O/exec", "_blank"); }
 </script>
 </body>
 </html>
