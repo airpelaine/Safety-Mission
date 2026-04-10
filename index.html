@@ -240,6 +240,7 @@
         document.getElementById('start-menu').style.display = 'none';
         document.getElementById('game-section').style.display = 'block';
         document.getElementById('top-bar').style.display = 'flex';
+        extY = 150; targetY = 150; // Reset extinguisher position
         gameActive = true;
         initControls();
         setInterval(spawnFire, 1500);
@@ -287,18 +288,20 @@
     }
 
     function initControls() {
+        // Use Pointer Events for unified Mobile/Desktop support
         const handleMove = (e) => {
+            if(!gameActive) return;
             const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            targetY = (clientY - rect.top) * (canvas.height / rect.height) - 35;
+            const clientY = e.clientY || (e.touches ? e.touches[0].clientY : rect.top + rect.height/2);
+            const scaleY = canvas.height / rect.height;
+            let val = (clientY - rect.top) * scaleY - 35;
+            // Guard against NaN and restrict bounds
+            if (!isNaN(val)) targetY = Math.max(0, Math.min(canvas.height - 70, val));
         };
-        canvas.addEventListener("mousedown", () => isSpraying = true);
-        canvas.addEventListener("mouseup", () => isSpraying = false);
-        canvas.addEventListener("mousemove", handleMove);
-        canvas.addEventListener("touchstart", (e) => { e.preventDefault(); isSpraying = true; handleMove(e); });
-        canvas.addEventListener("touchend", () => isSpraying = false);
-        canvas.addEventListener("touchmove", (e) => { e.preventDefault(); handleMove(e); });
+
+        canvas.addEventListener("pointerdown", (e) => { isSpraying = true; handleMove(e); });
+        window.addEventListener("pointerup", () => isSpraying = false);
+        canvas.addEventListener("pointermove", handleMove);
 
         let activeItem = null, shiftX, shiftY;
         document.addEventListener("pointerdown", (e) => {
@@ -311,10 +314,18 @@
                 activeItem.setPointerCapture(e.pointerId);
             }
         });
-        document.addEventListener("pointermove", (e) => { if (activeItem) { activeItem.style.left = e.clientX - shiftX + 'px'; activeItem.style.top = e.clientY - shiftY + 'px'; } });
+        document.addEventListener("pointermove", (e) => { 
+            if (activeItem) { 
+                activeItem.style.left = e.clientX - shiftX + 'px'; 
+                activeItem.style.top = e.clientY - shiftY + 'px'; 
+            } 
+        });
         document.addEventListener("pointerup", (e) => {
             if (!activeItem) return;
-            activeItem.style.visibility = 'hidden'; const target = document.elementFromPoint(e.clientX, e.clientY); activeItem.style.visibility = 'visible';
+            activeItem.style.visibility = 'hidden'; 
+            const target = document.elementFromPoint(e.clientX, e.clientY); 
+            activeItem.style.visibility = 'visible';
+            
             if (target && target.classList.contains("part-target") && target.dataset.answer === activeItem.innerText) {
                 target.innerText = activeItem.innerText; target.classList.add("filled-correct"); activeItem.style.display = "none";
                 if (document.querySelectorAll('#quiz-section .filled-correct').length === 6) document.getElementById("quizReturnBtn").style.display = "block";
@@ -381,6 +392,7 @@
         document.getElementById('p-bar-main').style.width = (wavesCleared / 10 * 100) + "%";
         if(wavesCleared >= 10) { document.getElementById('bonus-round-box').style.display = 'block'; return; }
         document.getElementById('game-section').style.display = 'block';
+        extY = 150; targetY = 150; // Hard reset to ensure it's visible
         gameActive = true; updateHUD(); requestAnimationFrame(loop);
     }
 
@@ -389,7 +401,7 @@
         if(!isTrue) { 
             msg.style.color = "#16a34a"; msg.innerText = "Correct! ✅ Black tags are for deceased/expectant.";
             setTimeout(() => { document.getElementById('bonus-round-box').style.display = 'none'; document.getElementById('congrats').style.display = 'block'; }, 2000);
-        } else { msg.style.color = "#ef4444"; msg.innerText = "Wrong number! ❌ Black tags are deceased/expectant."; }
+        } else { msg.style.color = "#ef4444"; msg.innerText = "Wrong! ❌ Black tags are deceased/expectant."; }
     }
 
     function setupS1() { document.getElementById('quiz-section').style.display = 'block'; document.getElementById('s1-choices').innerHTML = ["PRESSURE GAUGE","LEVER","NOZZLE","PIN","HOSE","HANDLE"].map(c => `<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); }
@@ -491,7 +503,9 @@
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawRepeatingBackground(bgOffset);
-        ctx.font = "80px Arial"; ctx.fillText("🧯", 40, extY + 70);
+        // Fixed positioning and coordinate safety
+        const drawY = isNaN(extY) ? 150 : extY;
+        ctx.font = "80px Arial"; ctx.fillText("🧯", 40, drawY + 70);
         ctx.fillStyle = "white"; particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2); ctx.fill(); });
         fires.forEach(f => { if(f.alive) { ctx.font = f.size + "px Arial"; ctx.fillText("🔥", f.x, f.y); } });
         if(majorBlazeActive) { 
