@@ -55,8 +55,7 @@
         .blank-inline { display: inline-flex; width: 80px; height: 25px; border-bottom: 2px solid #3b82f6; margin: 0 5px; vertical-align: middle; color: #2563eb; font-weight: bold; justify-content: center; align-items: center; }
         .slot-correct { background: #dcfce7; border-bottom: 2px solid #16a34a; color: #166534; }
 
-        /* Bonus Round Styles */
-        .bonus-btn { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; cursor: pointer; color: white; border: 8px solid rgba(255,255,255,0.3); transition: 0.2s; }
+        .bonus-btn { width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; cursor: pointer; color: white; border: 5px solid rgba(255,255,255,0.3); transition: 0.2s; }
         .bonus-btn:active { transform: scale(0.9); }
     </style>
 </head>
@@ -126,7 +125,7 @@
 
     <div id="phone-section" class="checkpoint-box">
         <h3>Stage 2: Emergency Response</h3>
-        <p style="font-size: 13px;">Dial the Emergency Hotline (1111)</p>
+        <p style="font-size: 13px;">Dial the St. Luke's Emergency Hotline</p>
         <div class="iphone-frame">
             <div class="iphone-screen">
                 <div class="iphone-display" id="phone-display"></div>
@@ -290,6 +289,7 @@
     function initControls() {
         const handleMove = (e) => {
             const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             targetY = (clientY - rect.top) * (canvas.height / rect.height) - 35;
         };
@@ -304,9 +304,10 @@
         document.addEventListener("pointerdown", (e) => {
             if (e.target.classList.contains("dr-item")) {
                 activeItem = e.target; const rect = activeItem.getBoundingClientRect();
-                shiftX = rect.width / 2;
-                shiftY = rect.height / 2;
+                shiftX = rect.width / 2; shiftY = rect.height / 2;
                 activeItem.style.position = 'fixed'; activeItem.style.zIndex = 2000;
+                activeItem.style.left = (e.clientX - shiftX) + 'px';
+                activeItem.style.top = (e.clientY - shiftY) + 'px';
                 activeItem.setPointerCapture(e.pointerId);
             }
         });
@@ -385,25 +386,19 @@
 
     function checkBonus(isTrue) {
         let msg = document.getElementById("bonus-msg");
-        if(!isTrue) { // The answer is FALSE
-            msg.style.color = "#16a34a";
-            msg.innerText = "Correct! ✅ Black tags are for deceased/expectant.";
-            setTimeout(() => {
-                document.getElementById('bonus-round-box').style.display = 'none';
-                document.getElementById('congrats').style.display = 'block';
-            }, 2000);
-        } else {
-            msg.style.color = "#ef4444";
-            msg.innerText = "Incorrect! ❌ Try again.";
-        }
+        if(!isTrue) { 
+            msg.style.color = "#16a34a"; msg.innerText = "Correct! ✅ Black tags are for deceased/expectant.";
+            setTimeout(() => { document.getElementById('bonus-round-box').style.display = 'none'; document.getElementById('congrats').style.display = 'block'; }, 2000);
+        } else { msg.style.color = "#ef4444"; msg.innerText = "Wrong number! ❌ Black tags are deceased/expectant."; }
     }
 
     function setupS1() { document.getElementById('quiz-section').style.display = 'block'; document.getElementById('s1-choices').innerHTML = ["PRESSURE GAUGE","LEVER","NOZZLE","PIN","HOSE","HANDLE"].map(c => `<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); }
     function setupS2() { document.getElementById('phone-section').style.display = 'block'; document.getElementById("phone-display").innerText = ""; }
-    function pressKey(n){ const d=document.getElementById("phone-display"); if(d.innerText.length<10) d.innerText+=n; }
+    function pressKey(n){ const d=document.getElementById("phone-display"); if(d.innerText.length<4) d.innerText+=n; }
     function makeCall() { 
         const d = document.getElementById("phone-display");
-        if(d.innerText === "1111") { d.innerText = "Calling....."; setTimeout(() => returnToGame('phone-section'), 2000); } else { d.innerText = ""; } 
+        if(d.innerText === "1111") { d.innerText = "Calling....."; setTimeout(() => returnToGame('phone-section'), 2000); } 
+        else { d.innerText = "Wrong number"; setTimeout(() => { d.innerText = ""; }, 1000); } 
     }
 
     function setupGrid(stg){
@@ -450,8 +445,8 @@
         const raceData = [
             {l:'R', t:'Rescue 🚑', a:['Rescue 🚑'], opts: ['Rescue 🚑', 'Run 🏃', 'Remove 🗑️', 'Rest 💤']},
             {l:'A', t:'Alarm 🔔', a:['Alarm 🔔'], opts: ['Alarm 🔔', 'Attack 👊', 'Alert 🚨', 'Aim 🎯']},
-            {l:'C', t:'Contain & Confine 🛡️', a:['Contain 🛡️', 'Confine 🔒'], opts: ['Contain 🛡️', 'Confine 🔒', 'Connect 🔗', 'Cover 🙊']},
-            {l:'E', t:'Extinguish & Evacuate 🏃', a:['Extinguish 🧯', 'Evacuate 🏃'], opts: ['Extinguish 🧯', 'Evacuate 🏃', 'Eat 🍎', 'Exit 🚪']}
+            {l:'C', t:'Contain/Confine 🛡️', a:['Contain 🛡️', 'Confine 🔒'], opts: ['Contain 🛡️', 'Confine 🔒', 'Connect 🔗', 'Cover 🙊']},
+            {l:'E', t:'Extinguish/Evacuate 🏃', a:['Extinguish 🧯', 'Evacuate 🏃'], opts: ['Extinguish 🧯', 'Evacuate 🏃', 'Eat 🍎', 'Exit 🚪']}
         ];
         const o=document.getElementById("logic-body"); o.innerHTML=`<div style="display:flex; justify-content:center; gap:5px; margin-bottom:15px;">`+raceData.map(r=>`<div class="race-letter-box" id="r${r.l}">${r.l}</div>`).join('')+`</div><div id="logic-msg" style="margin-bottom:10px; font-weight:bold; font-size:12px;"></div><div class="choice-grid" id="ro"></div>`;
         for(let i=0; i<rStep; i++){ let b=document.getElementById("r"+raceData[i].l); b.style.backgroundColor="#dcfce7"; b.innerText=raceData[i].t; }
@@ -499,7 +494,10 @@
         ctx.font = "80px Arial"; ctx.fillText("🧯", 40, extY + 70);
         ctx.fillStyle = "white"; particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2); ctx.fill(); });
         fires.forEach(f => { if(f.alive) { ctx.font = f.size + "px Arial"; ctx.fillText("🔥", f.x, f.y); } });
-        if(majorBlazeActive) { ctx.font = "200px Arial"; ctx.shadowBlur = 20; ctx.shadowColor = "yellow"; ctx.fillText("🔥", bossX, 240); ctx.shadowBlur = 0; }
+        if(majorBlazeActive) { 
+            ctx.font = "200px Arial"; ctx.shadowBlur = 20; ctx.shadowColor = "yellow"; 
+            ctx.fillText("🔥", bossX, 240); ctx.shadowBlur = 0; 
+        }
     }
 
     function loop() { if(gameActive) { update(); draw(); requestAnimationFrame(loop); } }
