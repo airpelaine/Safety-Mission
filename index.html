@@ -88,8 +88,8 @@
 
     <div id="start-menu">
         <div class="buster-character" style="font-size: 80px;">🧯</div>
-        <div id="buster-bubble" class="speech-bubble">Wait! You're the new safety recruit, right?</div>
-        <div id="story-text" style="color: #94a3b8; font-style: italic; font-size: 14px; margin-bottom: 15px;">Buster looks you up and down...</div>
+        <div id="buster-bubble" class="speech-bubble">Eyes sharp, Recruit! You’ve arrived just as the heat is rising.</div>
+        <div id="story-text" style="color: #94a3b8; font-style: italic; font-size: 14px; margin-bottom: 15px;">Buster’s pressure gauge needles flicker toward the red zone as he scans the hall.</div>
         <button class="btn" id="story-btn" onclick="nextStoryStep()">NEXT</button>
         <button class="btn" id="start-mission-btn" style="background:#16a34a; display:none;" onclick="startGame()">IGNITE MISSION!</button>
     </div>
@@ -205,10 +205,10 @@
     canvas.width = 800; canvas.height = 350;
 
     const storySteps = [
-        { bubble: "Wait! You're the new safety recruit, right?", narrative: "Buster looks you up and down with his pressure gauge eye." },
-        { bubble: "The hospital is under a 'Blaze Alert'. Small fires are popping up!", narrative: "You hear the distant sound of Code Orange alarms." },
+        { bubble: "Code Orange is in effect! Multiple hotspots are threatening the medical wards.", narrative: "The scent of ozone fills the air as emergency lights strobe across the floor." },
+        { bubble: "I’ve got the suppression foam primed, but I need your steady hand to guide the nozzle.", narrative: "He gives a metallic rattle, his safety pin trembling with anticipation." },
         { bubble: "I've got the foam, but I need your hands to aim. Teamwork saves lives!", narrative: "Buster shakes with excitement (and high-pressure gas)." },
-        { bubble: "To stop the spread, we need 100 points. Are you ready?", narrative: "The mission is clear: Protect St. Luke's at all costs." }
+        { bubble: "100 points of containment will break this blaze. Let’s save some lives!", narrative: "The mission is live: St. Luke's is counting on your reflexes." }
     ];
     let storyIndex = 0;
 
