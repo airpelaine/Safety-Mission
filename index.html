@@ -42,7 +42,6 @@
         #final-meter-container { width: 150px; height: 12px; background: #334155; border-radius: 6px; overflow: hidden; margin: 5px auto; border: 1px solid white; }
         #final-meter-fill { width: 100%; height: 100%; background: #ef4444; }
 
-        /* DIAGRAM ADJUSTMENTS */
         .diagram-wrapper { position: relative; width: 280px; height: 320px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 10px auto; flex-shrink: 0; }
         .part-target { position: absolute; border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 6px; }
         .filled-correct { background: #1e3a8a !important; color: white !important; font-size: 8px !important; }
@@ -155,7 +154,6 @@
 
     <div id="grid-stage-section" class="checkpoint-box">
         <h2 id="grid-title"></h2>
-        <p id="grid-instr" style="font-size: 14px;"></p>
         <div style="margin: 15px 0;">
             <div class="dr-item" id="person-logic" style="font-size:50px; cursor:grab; border:2px solid #3b82f6; display:inline-block; padding:15px; border-radius:50%; background:white; touch-action:none;">🚶</div>
         </div>
@@ -195,9 +193,6 @@
 
     <div id="congrats" class="checkpoint-box">
         <h1 style="color:#2563eb;">MISSION ACCOMPLISHED! 🏆</h1>
-        <div style="text-align: left; font-size: 14px; padding: 20px; background: #f8fafc; border-radius: 10px; border-left: 4px solid #3b82f6; margin-bottom: 15px; max-width: 400px;">
-            <p>1. Click <b>REVEAL MY CODE</b>.<br>2. <b>Copy</b> the code from the new tab.<br>3. <b>Paste</b> it into your verification form.</p>
-        </div>
         <button class="btn" style="background:#3b82f6;" onclick="revealCodeRedirect()">REVEAL MY CODE</button>
     </div>
 
@@ -258,6 +253,7 @@
         requestAnimationFrame(loop);
     }
 
+    // RESTORED FULL DETAILED BACKGROUND
     function drawRepeatingBackground(offset) {
         for (let x = offset % 800 - 800; x < canvas.width + 800; x += 800) {
             ctx.fillStyle = "#55b5d9"; ctx.fillRect(x, 0, 800, 280); 
@@ -266,14 +262,46 @@
             ctx.fillStyle = "#ffffff"; ctx.fillRect(x, 40, 800, 8);
             ctx.fillStyle = "#ffffff"; ctx.fillRect(x, 220, 800, 10);
             ctx.fillStyle = "#1e4e79"; ctx.fillRect(x, 230, 800, 40);
+            ctx.fillStyle = "#ffffff"; ctx.fillRect(x, 270, 800, 5);
+            
+            // Medical Ward Windows
             ctx.fillStyle = "#b1b9bf"; ctx.fillRect(x + 50, 80, 110, 190);
             ctx.fillStyle = "#cbd5e1"; ctx.fillRect(x + 55, 85, 100, 185);
+            ctx.fillStyle = "#94a3b8"; ctx.fillRect(x + 103, 85, 4, 185);
+            
+            // Door Frame
             ctx.fillStyle = "#6b1c23"; ctx.fillRect(x + 90, 80, 30, 5);
+            
+            // Lights
+            ctx.fillStyle = "#cbd5e1"; ctx.fillRect(x + 165, 130, 15, 30);
+            ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(x + 172, 138, 3, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(x + 172, 152, 3, 0, Math.PI*2); ctx.fill();
+            
+            // Wall Panels
             ctx.fillStyle = "#e6a15c"; ctx.fillRect(x + 280, 80, 85, 190);
             ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.strokeRect(x + 280, 80, 85, 190);
+            ctx.fillStyle = "silver"; ctx.fillRect(x + 288, 155, 8, 40);
+            
+            // Medical Sign
             ctx.fillStyle = "white"; ctx.fillRect(x + 420, 85, 120, 80);
             ctx.strokeStyle = "#e6a15c"; ctx.strokeRect(x + 420, 85, 120, 80);
+            ctx.fillStyle = "#4a90e2"; ctx.beginPath(); ctx.arc(x + 500, 115, 15, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#333"; ctx.fillRect(x + 430, 100, 40, 3); ctx.fillRect(x + 430, 110, 40, 3); ctx.fillRect(x + 430, 120, 40, 3);
+            
+            // Stretchers/Beds Base
             ctx.fillStyle = "#f5b741"; ctx.fillRect(x + 410, 225, 140, 45);
+            ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2; ctx.strokeRect(x + 410, 225, 140, 45);
+            ctx.fillStyle = "#333"; ctx.fillRect(x + 420, 270, 5, 10); ctx.fillRect(x + 535, 270, 5, 10);
+            
+            // Secondary Door
+            ctx.fillStyle = "#e6a15c"; ctx.fillRect(x + 650, 80, 85, 190);
+            ctx.strokeStyle = "white"; ctx.strokeRect(x + 650, 80, 85, 190);
+            ctx.fillStyle = "silver"; ctx.fillRect(x + 658, 155, 8, 40);
+            
+            // Smoke Detector
+            ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(x + 30, 100, 25, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = "#999"; ctx.stroke();
+            ctx.fillStyle = "#333"; ctx.fillRect(x + 28, 90, 4, 12); ctx.fillRect(x + 30, 98, 10, 4);
         }
     }
 
@@ -316,7 +344,8 @@
         document.addEventListener("pointerup", (e) => {
             if (!activeItem) return;
             activeItem.style.visibility = 'hidden'; 
-            const target = document.elementFromPoint(e.clientX, e.clientY); 
+            const touchX = e.clientX; const touchY = e.clientY;
+            const target = document.elementFromPoint(touchX, touchY); 
             activeItem.style.visibility = 'visible';
             
             if (target && target.classList.contains("part-target") && target.dataset.answer === activeItem.innerText) {
