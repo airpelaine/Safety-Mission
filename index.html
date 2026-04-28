@@ -6,11 +6,22 @@
     <style>
         body { margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #0f172a; font-family: 'Segoe UI', sans-serif; color: #f7fafc; overflow: hidden; touch-action: none; user-select: none; }
         
-        #pre-game-box, #player-form-box, #start-menu, .checkpoint-box { 
+        #pre-game-box, #player-form-box, #start-menu { 
             text-align: center; background: #1e293b; padding: 30px; border-radius: 20px; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 85%; max-width: 450px; z-index: 100; 
         }
-        #player-form-box, #start-menu, #game-section, .checkpoint-box { display: none; }
+
+        /* MAXIMIZED STAGE INTERFACE */
+        .checkpoint-box {
+            text-align: center; background: white; color: #1e293b;
+            width: 100vw; height: 100vh; 
+            position: fixed; top: 0; left: 0;
+            z-index: 1000; overflow-y: auto;
+            display: none; flex-direction: column; align-items: center; padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #player-form-box, #start-menu, #game-section { display: none; }
 
         .form-group { margin-bottom: 15px; text-align: left; }
         .form-group label { display: block; font-size: 12px; color: #60a5fa; margin-bottom: 5px; font-weight: bold; }
@@ -31,31 +42,33 @@
         #final-meter-container { width: 150px; height: 12px; background: #334155; border-radius: 6px; overflow: hidden; margin: 5px auto; border: 1px solid white; }
         #final-meter-fill { width: 100%; height: 100%; background: #ef4444; }
 
-        .checkpoint-box { background: white; color: #1e293b; max-height: 90vh; overflow-y: auto; }
-        .diagram-wrapper { position: relative; width: 280px; height: 320px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto; }
+        /* DIAGRAM ADJUSTMENTS */
+        .diagram-wrapper { position: relative; width: 280px; height: 320px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 10px auto; flex-shrink: 0; }
         .part-target { position: absolute; border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 6px; }
-        .filled-correct { background: #1e3a8a !important; color: white !important; }
-        .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-        .choice-box-uniform { padding: 12px; background: #2563eb; color: white; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
-        .drop-zone { border: 2px dashed #94a3b8; border-radius: 10px; padding: 10px; background: #f1f5f9; min-height: 50px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .filled-correct { background: #1e3a8a !important; color: white !important; font-size: 8px !important; }
+        
+        .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; width: 100%; max-width: 400px; }
+        .choice-box-uniform { padding: 15px; background: #2563eb; color: white; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .drop-zone { border: 2px dashed #94a3b8; border-radius: 10px; padding: 15px; background: #f1f5f9; min-height: 60px; font-size: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         .filled-correct-grid { background: #dcfce7 !important; border: 2px solid #16a34a !important; color: #166534 !important; }
         
-        .iphone-frame { width: 180px; height: 350px; background: #1c1c1e; border-radius: 30px; border: 6px solid #334155; margin: 0 auto; position: relative; padding: 10px; }
+        .iphone-frame { width: 180px; height: 350px; background: #1c1c1e; border-radius: 30px; border: 6px solid #334155; margin: 10px auto; position: relative; padding: 10px; flex-shrink: 0; }
         .iphone-screen { background: #000; height: 100%; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .iphone-display { color: #fff; font-size: 18px; margin-bottom: 15px; min-height: 24px; text-align: center; width: 100%; }
         .iphone-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .iphone-key { width: 38px; height: 38px; background: #3a3a3c; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .iphone-call { width: 45px; height: 45px; background: #34c759; color: white; border-radius: 50%; border: none; margin-top: 10px; cursor: pointer; }
 
-        .btn { padding: 12px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; background: #3b82f6; color: white; width: 100%; margin-top: 10px; }
-        .btn-green { background: #16a34a; display: none; }
-        .rainbow-grid { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; padding: 10px 0; width: 100%; }
-        .rainbow-box { width: 52px; height: 70px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; color: white; text-transform: uppercase; flex-shrink: 0; }
-        .race-letter-box { width: 85px; height: 85px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 9px; border: 2px solid #cbd5e1; }
-        .blank-inline { display: inline-flex; width: 80px; height: 25px; border-bottom: 2px solid #3b82f6; margin: 0 5px; vertical-align: middle; color: #2563eb; font-weight: bold; justify-content: center; align-items: center; }
+        .btn { padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; background: #3b82f6; color: white; width: 100%; max-width: 300px; margin-top: 15px; font-size: 16px; }
+        .btn-green { background: #16a34a; }
+        
+        .rainbow-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 10px 0; width: 100%; }
+        .rainbow-box { width: 65px; height: 85px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: white; text-transform: uppercase; flex-shrink: 0; }
+        .race-letter-box { width: 75px; height: 75px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 2px solid #cbd5e1; font-weight: bold; }
+        .blank-inline { display: inline-flex; width: 90px; height: 28px; border-bottom: 2px solid #3b82f6; margin: 0 5px; vertical-align: middle; color: #2563eb; font-weight: bold; justify-content: center; align-items: center; }
         .slot-correct { background: #dcfce7; border-bottom: 2px solid #16a34a; color: #166534; }
 
-        .bonus-btn { width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; cursor: pointer; color: white; border: 5px solid rgba(255,255,255,0.3); transition: 0.2s; }
+        .bonus-btn { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 22px; cursor: pointer; color: white; border: 5px solid rgba(255,255,255,0.3); transition: 0.2s; }
         .bonus-btn:active { transform: scale(0.9); }
     </style>
 </head>
@@ -81,7 +94,7 @@
         </div>
         <div class="form-group">
             <label>I AM PLAYER NUMBER</label>
-            <input type="text" id="user-id" placeholder="Enter employee no. / doctor's code / student no" oninput="validate(); this.value = this.value.replace(/[^0-9]/g, '');">
+            <input type="text" id="user-id" placeholder="Enter ID number" oninput="validate(); this.value = this.value.replace(/[^0-9]/g, '');">
         </div>
         <button class="btn" id="form-submit-btn" style="opacity: 0.5;" onclick="saveDetails()">PROCEED</button>
     </div>
@@ -89,7 +102,7 @@
     <div id="start-menu">
         <div class="buster-character" style="font-size: 80px;">🧯</div>
         <div id="buster-bubble" class="speech-bubble">Eyes sharp, Recruit! You’ve arrived just as the heat is rising.</div>
-        <div id="story-text" style="color: #94a3b8; font-style: italic; font-size: 14px; margin-bottom: 15px;">Buster’s pressure gauge locks firmly into the green. He is fully charged and primed for combat.</div>
+        <div id="story-text" style="color: #94a3b8; font-style: italic; font-size: 14px; margin-bottom: 15px;">Buster’s pressure gauge locks firmly into the green.</div>
         <button class="btn" id="story-btn" onclick="nextStoryStep()">NEXT</button>
         <button class="btn" id="start-mission-btn" style="background:#16a34a; display:none;" onclick="startGame()">IGNITE MISSION!</button>
     </div>
@@ -110,7 +123,7 @@
 
     <div id="quiz-section" class="checkpoint-box">
         <h3>Stage 1: Equipment Check</h3>
-        <p style="font-size: 13px;">Drag parts to the extinguisher.</p>
+        <p style="font-size: 14px; margin-top: 0;">Drag parts to the extinguisher targets.</p>
         <div class="diagram-wrapper">
             <div class="part-target" data-answer="HANDLE" style="top:32px; left:158px;"></div>
             <div class="part-target" data-answer="LEVER" style="top:72px; left:168px;"></div>
@@ -120,12 +133,12 @@
             <div class="part-target" data-answer="NOZZLE" style="top:240px; left:90px;"></div>
         </div>
         <div class="choice-grid" id="s1-choices"></div>
-        <button id="quizReturnBtn" class="btn btn-green" onclick="returnToGame('quiz-section')">CONTINUE →</button>
+        <button id="quizReturnBtn" class="btn btn-green" style="display:none;" onclick="returnToGame('quiz-section')">CONTINUE →</button>
     </div>
 
     <div id="phone-section" class="checkpoint-box">
         <h3>Stage 2: Emergency Response</h3>
-        <p style="font-size: 13px;">Dial the St. Luke's Emergency Hotline</p>
+        <p style="font-size: 14px;">Dial the St. Luke's Emergency Hotline</p>
         <div class="iphone-frame">
             <div class="iphone-screen">
                 <div class="iphone-display" id="phone-display"></div>
@@ -142,48 +155,47 @@
 
     <div id="grid-stage-section" class="checkpoint-box">
         <h2 id="grid-title"></h2>
-        <p id="grid-instr" style="font-size: 13px;"></p>
+        <p id="grid-instr" style="font-size: 14px;"></p>
         <div style="margin: 15px 0;">
-            <div class="dr-item" id="person-logic" style="font-size:45px; cursor:grab; border:2px solid #3b82f6; display:inline-block; padding:10px; border-radius:50%; background:white; touch-action:none;">🚶</div>
-            <div style="font-size: 10px; color: #2563eb; font-weight: bold; margin-top: 5px;">Drag me to safety</div>
+            <div class="dr-item" id="person-logic" style="font-size:50px; cursor:grab; border:2px solid #3b82f6; display:inline-block; padding:15px; border-radius:50%; background:white; touch-action:none;">🚶</div>
         </div>
         <div class="choice-grid" id="main-drop-grid"></div>
-        <button id="gridNextBtn" class="btn btn-green" onclick="returnToGame('grid-stage-section')">CONTINUE →</button>
+        <button id="gridNextBtn" class="btn btn-green" style="display:none;" onclick="returnToGame('grid-stage-section')">CONTINUE →</button>
     </div>
 
     <div id="pass-section" class="checkpoint-box">
         <h3>Stage 4: PASS Protocol</h3>
-        <div style="text-align:left; font-size:13px; background:#f8fafc; padding:15px; border-radius:12px; color:black; line-height:2;">
+        <div style="text-align:left; font-size:15px; background:#f8fafc; padding:20px; border-radius:12px; color:black; line-height:2.5; width: 100%; max-width: 350px;">
             Pull the <span class="blank-inline t-trg" id="slot-PIN"></span>,<br>
             Aim the <span class="blank-inline t-trg" id="slot-NOZZLE"></span> at base,<br>
             Squeeze the <span class="blank-inline t-trg" id="slot-LEVER"></span>,<br>
             <span class="blank-inline t-trg" id="slot-SWEEP"></span> from side to side.
         </div>
         <div id="pass-bank" class="choice-grid"></div>
-        <button id="passReturnBtn" class="btn btn-green" onclick="returnToGame('pass-section')">CONTINUE →</button>
+        <button id="passReturnBtn" class="btn btn-green" style="display:none;" onclick="returnToGame('pass-section')">CONTINUE →</button>
     </div>
 
     <div id="logic-box" class="checkpoint-box">
         <h2 id="logic-title"></h2>
-        <div id="logic-body"></div>
-        <button id="logicNextBtn" class="btn btn-green" onclick="returnToGame('logic-box')">CONTINUE →</button>
+        <div id="logic-body" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
+        <button id="logicNextBtn" class="btn btn-green" style="display:none;" onclick="returnToGame('logic-box')">CONTINUE →</button>
     </div>
 
     <div id="bonus-round-box" class="checkpoint-box">
         <h2 style="color:#fbbf24;">BONUS ROUND</h2>
-        <p style="font-size: 14px; font-weight: bold; margin-bottom: 20px;">
+        <p style="font-size: 18px; font-weight: bold; margin-bottom: 30px; max-width: 400px;">
             BLACK TAGS - (immediate) are used to label those who cannot survive without immediate treatment but who have a chance of survival.
         </p>
-        <div style="display: flex; justify-content: center; gap: 40px; margin-top: 20px;">
+        <div style="display: flex; justify-content: center; gap: 40px;">
             <div class="bonus-btn" style="background-color: #16a34a;" onclick="checkBonus(true)">TRUE</div>
             <div class="bonus-btn" style="background-color: #ef4444;" onclick="checkBonus(false)">FALSE</div>
         </div>
-        <div id="bonus-msg" style="margin-top:20px; font-weight:bold;"></div>
+        <div id="bonus-msg" style="margin-top:20px; font-weight:bold; font-size: 18px;"></div>
     </div>
 
     <div id="congrats" class="checkpoint-box">
         <h1 style="color:#2563eb;">MISSION ACCOMPLISHED! 🏆</h1>
-        <div style="text-align: left; font-size: 13px; padding: 10px; background: #f8fafc; border-radius: 10px; border-left: 4px solid #3b82f6; margin-bottom: 15px;">
+        <div style="text-align: left; font-size: 14px; padding: 20px; background: #f8fafc; border-radius: 10px; border-left: 4px solid #3b82f6; margin-bottom: 15px; max-width: 400px;">
             <p>1. Click <b>REVEAL MY CODE</b>.<br>2. <b>Copy</b> the code from the new tab.<br>3. <b>Paste</b> it into your verification form.</p>
         </div>
         <button class="btn" style="background:#3b82f6;" onclick="revealCodeRedirect()">REVEAL MY CODE</button>
@@ -205,10 +217,9 @@
     canvas.width = 800; canvas.height = 350;
 
     const storySteps = [
-        { bubble: "Code Orange is in effect! Multiple hotspots are threatening the medical wards.", narrative: "The scent of ozone fills the air as emergency lights strobe across the floor." },
-        { bubble: "I’ve got the suppression foam primed, but I need your steady hand to guide the nozzle.", narrative: "He gives a metallic rattle, his safety pin trembling with anticipation." },
-        { bubble: "I've got the foam, but I need your hands to aim. Teamwork saves lives!", narrative: "Buster shakes with excitement (and high-pressure gas)." },
-        { bubble: "Clear all 10 waves of fire to break this blaze. Let’s save some lives!", narrative: "The mission is live: St. Luke's is counting on your reflexes." }
+        { bubble: "Code Orange is in effect! Multiple hotspots are threatening the medical wards.", narrative: "The scent of ozone fills the air." },
+        { bubble: "I’ve got the suppression foam primed, but I need your steady hand.", narrative: "He gives a metallic rattle." },
+        { bubble: "Teamwork saves lives! Clear all 10 waves.", narrative: "St. Luke's is counting on you." }
     ];
     let storyIndex = 0;
 
@@ -240,7 +251,7 @@
         document.getElementById('start-menu').style.display = 'none';
         document.getElementById('game-section').style.display = 'block';
         document.getElementById('top-bar').style.display = 'flex';
-        extY = 150; targetY = 150; // Reset extinguisher position
+        extY = 150; targetY = 150;
         gameActive = true;
         initControls();
         setInterval(spawnFire, 1500);
@@ -255,30 +266,14 @@
             ctx.fillStyle = "#ffffff"; ctx.fillRect(x, 40, 800, 8);
             ctx.fillStyle = "#ffffff"; ctx.fillRect(x, 220, 800, 10);
             ctx.fillStyle = "#1e4e79"; ctx.fillRect(x, 230, 800, 40);
-            ctx.fillStyle = "#ffffff"; ctx.fillRect(x, 270, 800, 5);
             ctx.fillStyle = "#b1b9bf"; ctx.fillRect(x + 50, 80, 110, 190);
             ctx.fillStyle = "#cbd5e1"; ctx.fillRect(x + 55, 85, 100, 185);
-            ctx.fillStyle = "#94a3b8"; ctx.fillRect(x + 103, 85, 4, 185);
             ctx.fillStyle = "#6b1c23"; ctx.fillRect(x + 90, 80, 30, 5);
-            ctx.fillStyle = "#cbd5e1"; ctx.fillRect(x + 165, 130, 15, 30);
-            ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(x + 172, 138, 3, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(x + 172, 152, 3, 0, Math.PI*2); ctx.fill();
             ctx.fillStyle = "#e6a15c"; ctx.fillRect(x + 280, 80, 85, 190);
             ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.strokeRect(x + 280, 80, 85, 190);
-            ctx.fillStyle = "silver"; ctx.fillRect(x + 288, 155, 8, 40);
             ctx.fillStyle = "white"; ctx.fillRect(x + 420, 85, 120, 80);
             ctx.strokeStyle = "#e6a15c"; ctx.strokeRect(x + 420, 85, 120, 80);
-            ctx.fillStyle = "#4a90e2"; ctx.beginPath(); ctx.arc(x + 500, 115, 15, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = "#333"; ctx.fillRect(x + 430, 100, 40, 3); ctx.fillRect(x + 430, 110, 40, 3); ctx.fillRect(x + 430, 120, 40, 3);
             ctx.fillStyle = "#f5b741"; ctx.fillRect(x + 410, 225, 140, 45);
-            ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2; ctx.strokeRect(x + 410, 225, 140, 45);
-            ctx.fillStyle = "#333"; ctx.fillRect(x + 420, 270, 5, 10); ctx.fillRect(x + 535, 270, 5, 10);
-            ctx.fillStyle = "#e6a15c"; ctx.fillRect(x + 650, 80, 85, 190);
-            ctx.strokeStyle = "white"; ctx.strokeRect(x + 650, 80, 85, 190);
-            ctx.fillStyle = "silver"; ctx.fillRect(x + 658, 155, 8, 40);
-            ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(x + 30, 100, 25, 0, Math.PI*2); ctx.fill();
-            ctx.strokeStyle = "#999"; ctx.stroke();
-            ctx.fillStyle = "#333"; ctx.fillRect(x + 28, 90, 4, 12); ctx.fillRect(x + 30, 98, 10, 4);
         }
     }
 
@@ -288,14 +283,12 @@
     }
 
     function initControls() {
-        // Use Pointer Events for unified Mobile/Desktop support
         const handleMove = (e) => {
             if(!gameActive) return;
             const rect = canvas.getBoundingClientRect();
             const clientY = e.clientY || (e.touches ? e.touches[0].clientY : rect.top + rect.height/2);
             const scaleY = canvas.height / rect.height;
             let val = (clientY - rect.top) * scaleY - 35;
-            // Guard against NaN and restrict bounds
             if (!isNaN(val)) targetY = Math.max(0, Math.min(canvas.height - 70, val));
         };
 
@@ -308,7 +301,7 @@
             if (e.target.classList.contains("dr-item")) {
                 activeItem = e.target; const rect = activeItem.getBoundingClientRect();
                 shiftX = rect.width / 2; shiftY = rect.height / 2;
-                activeItem.style.position = 'fixed'; activeItem.style.zIndex = 2000;
+                activeItem.style.position = 'fixed'; activeItem.style.zIndex = 5000;
                 activeItem.style.left = (e.clientX - shiftX) + 'px';
                 activeItem.style.top = (e.clientY - shiftY) + 'px';
                 activeItem.setPointerCapture(e.pointerId);
@@ -390,9 +383,12 @@
         document.getElementById(id).style.display = 'none';
         wavesCleared++;
         document.getElementById('p-bar-main').style.width = (wavesCleared / 10 * 100) + "%";
-        if(wavesCleared >= 10) { document.getElementById('bonus-round-box').style.display = 'block'; return; }
+        if(wavesCleared >= 10) { 
+            document.getElementById('bonus-round-box').style.cssText = 'display: flex !important;'; 
+            return; 
+        }
         document.getElementById('game-section').style.display = 'block';
-        extY = 150; targetY = 150; // Hard reset to ensure it's visible
+        extY = 150; targetY = 150;
         gameActive = true; updateHUD(); requestAnimationFrame(loop);
     }
 
@@ -400,13 +396,22 @@
         let msg = document.getElementById("bonus-msg");
         if(!isTrue) { 
             msg.style.color = "#16a34a"; msg.innerText = "Correct! ✅ Black tags are for deceased/expectant.";
-            setTimeout(() => { document.getElementById('bonus-round-box').style.display = 'none'; document.getElementById('congrats').style.display = 'block'; }, 2000);
+            setTimeout(() => { document.getElementById('bonus-round-box').style.display = 'none'; document.getElementById('congrats').style.cssText = 'display: flex !important;'; }, 2000);
         } else { msg.style.color = "#ef4444"; msg.innerText = "Wrong! ❌ Black tags are deceased/expectant."; }
     }
 
-    function setupS1() { document.getElementById('quiz-section').style.display = 'block'; document.getElementById('s1-choices').innerHTML = ["PRESSURE GAUGE","LEVER","NOZZLE","PIN","HOSE","HANDLE"].map(c => `<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); }
-    function setupS2() { document.getElementById('phone-section').style.display = 'block'; document.getElementById("phone-display").innerText = ""; }
+    function setupS1() { 
+        document.getElementById('quiz-section').style.cssText = 'display: flex !important;'; 
+        document.getElementById('s1-choices').innerHTML = ["PRESSURE GAUGE","LEVER","NOZZLE","PIN","HOSE","HANDLE"].map(c => `<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); 
+    }
+    
+    function setupS2() { 
+        document.getElementById('phone-section').style.cssText = 'display: flex !important;'; 
+        document.getElementById("phone-display").innerText = ""; 
+    }
+    
     function pressKey(n){ const d=document.getElementById("phone-display"); if(d.innerText.length<4) d.innerText+=n; }
+    
     function makeCall() { 
         const d = document.getElementById("phone-display");
         if(d.innerText === "1111") { d.innerText = "Calling....."; setTimeout(() => returnToGame('phone-section'), 2000); } 
@@ -414,13 +419,13 @@
     }
 
     function setupGrid(stg){
-        document.getElementById("grid-stage-section").style.display = 'block';
+        document.getElementById("grid-stage-section").style.cssText = 'display: flex !important;';
         const grid = document.getElementById("main-drop-grid"); grid.innerHTML = "";
         document.getElementById("gridNextBtn").style.display="none"; gStep = 0;
         let items = [];
         if(stg===3) { 
             document.getElementById("grid-title").innerText="Stage 3: Earthquake Protocol"; 
-            document.getElementById("grid-instr").innerText="Drag the person to the safety actions in order.";
+            document.getElementById("grid-instr").innerText="Drag the person to the actions in order.";
             items=[{t:"🙇 DUCK",c:true,s:0},{t:"🛡️ COVER",c:true,s:1},{t:"✊ HOLD",c:true,s:2},{t:"🏃 RUN",c:false},{t:"🏢 LIFT",c:false},{t:"🪟 WINDOW",c:false}]; 
         } else if(stg===9) {
             document.getElementById("grid-title").innerText="Stage 9: Quezon City Assembly"; 
@@ -440,19 +445,21 @@
         if (trg.dataset.correct === "true") {
             if(trg.dataset.step !== undefined && parseInt(trg.dataset.step) !== gStep) return;
             trg.classList.add("filled-correct-grid"); gStep++;
-            if(document.querySelectorAll('.checkpoint-box[style*="block"] .drop-zone[data-correct="true"]').length === gStep) document.getElementById("gridNextBtn").style.display="block";
+            if(document.querySelectorAll('.checkpoint-box[style*="flex"] .drop-zone[data-correct="true"]').length === gStep) document.getElementById("gridNextBtn").style.display="block";
         }
     }
 
     function setupS4() { 
-        document.getElementById("pass-section").style.display = 'block'; pcCount=0; document.getElementById("passReturnBtn").style.display = "none";
+        document.getElementById("pass-section").style.cssText = 'display: flex !important;'; pcCount=0; 
         document.querySelectorAll(".t-trg").forEach(el => {el.innerText = ""; el.classList.remove("slot-correct");});
         document.getElementById("pass-bank").innerHTML=["PIN","NOZZLE","LEVER","SWEEP"].sort(()=>Math.random()-0.5).map(c=>`<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); 
     }
 
     function setupS5() { 
-        document.getElementById("logic-box").style.display = 'block'; document.getElementById("logic-title").innerText="Stage 5: RACE Protocol"; rStep=0; raceSelections = []; drawRace(); 
+        document.getElementById("logic-box").style.cssText = 'display: flex !important;'; 
+        document.getElementById("logic-title").innerText="Stage 5: RACE Protocol"; rStep=0; drawRace(); 
     }
+
     function drawRace() {
         const raceData = [
             {l:'R', t:'Rescue 🚑', a:['Rescue 🚑'], opts: ['Rescue 🚑', 'Run 🏃', 'Remove 🗑️', 'Rest 💤']},
@@ -460,15 +467,12 @@
             {l:'C', t:'Contain/Confine 🛡️', a:['Contain 🛡️', 'Confine 🔒'], opts: ['Contain 🛡️', 'Confine 🔒', 'Connect 🔗', 'Cover 🙊']},
             {l:'E', t:'Extinguish/Evacuate 🏃', a:['Extinguish 🧯', 'Evacuate 🏃'], opts: ['Extinguish 🧯', 'Evacuate 🏃', 'Eat 🍎', 'Exit 🚪']}
         ];
-        const o=document.getElementById("logic-body"); o.innerHTML=`<div style="display:flex; justify-content:center; gap:5px; margin-bottom:15px;">`+raceData.map(r=>`<div class="race-letter-box" id="r${r.l}">${r.l}</div>`).join('')+`</div><div id="logic-msg" style="margin-bottom:10px; font-weight:bold; font-size:12px;"></div><div class="choice-grid" id="ro"></div>`;
+        const o=document.getElementById("logic-body"); o.innerHTML=`<div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">`+raceData.map(r=>`<div class="race-letter-box" id="r${r.l}">${r.l}</div>`).join('')+`</div><div id="logic-msg" style="margin-bottom:15px; font-weight:bold; font-size:14px; color:#2563eb;"></div><div class="choice-grid" id="ro"></div>`;
         for(let i=0; i<rStep; i++){ let b=document.getElementById("r"+raceData[i].l); b.style.backgroundColor="#dcfce7"; b.innerText=raceData[i].t; }
         if(rStep===4){ document.getElementById("logicNextBtn").style.display="block"; return; }
         const current = raceData[rStep];
-        document.getElementById("logic-msg").innerText = `${current.l}: ${current.a.length > 1 ? "(Choose 2 Answers)" : ""}`;
-        let optionsToShow = [...current.a];
-        let pool = current.opts.filter(opt => !current.a.includes(opt));
-        while(optionsToShow.length < 4) optionsToShow.push(pool.shift());
-        optionsToShow.sort(() => Math.random() - 0.5).forEach(opt => {
+        document.getElementById("logic-msg").innerText = `${current.l}: ${current.a.length > 1 ? "(Select 2)" : "Select the action"}`;
+        current.opts.sort(() => Math.random() - 0.5).forEach(opt => {
             let b = document.createElement("div"); b.className = "choice-box-uniform"; 
             if(raceSelections.includes(opt)) b.style.background = "#16a34a";
             b.innerText = opt;
@@ -483,15 +487,16 @@
     }
 
     function setupS6(s) {
-        document.getElementById("logic-box").style.display = 'block'; document.getElementById("logicNextBtn").style.display="none";
+        document.getElementById("logic-box").style.cssText = 'display: flex !important;'; 
+        document.getElementById("logicNextBtn").style.display="none";
         let winC="", instr="", colors=['Red','Orange','Yellow','Green','Blue','Pink','Silver'];
         if(s===6) { instr="Fire, Chemical Spill, Radiation, Earthquake, or Flood?"; winC="Orange"; }
         else if(s===7) { instr="Child Abduction?"; winC="Pink"; }
         else { instr="Active Shooter?"; winC="Silver"; }
         document.getElementById("logic-title").innerText="Stage " + s + ": Code Activation";
-        document.getElementById("logic-body").innerHTML=`<p style="font-size:12px; margin-bottom:10px;">${instr}</p><div class="rainbow-grid">`+colors.map(c=>{
+        document.getElementById("logic-body").innerHTML=`<p style="font-size:16px; margin-bottom:20px; font-weight:bold;">${instr}</p><div class="rainbow-grid">`+colors.map(c=>{
             let bg=c.toLowerCase(); if(bg==='silver')bg='#717171'; if(bg==='pink')bg='#FF1493';
-            return `<div class="rainbow-box" style="background:${bg}" onclick="if('${c}'==='${winC}') { document.getElementById('logicNextBtn').style.display='block'; this.style.outline='3px solid black'; }">${c}</div>`;
+            return `<div class="rainbow-box" style="background:${bg}" onclick="if('${c}'==='${winC}') { document.getElementById('logicNextBtn').style.display='block'; this.style.outline='4px solid #1e293b'; }">${c}</div>`;
         }).join('')+`</div>`;
     }
 
@@ -503,7 +508,6 @@
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawRepeatingBackground(bgOffset);
-        // Fixed positioning and coordinate safety
         const drawY = isNaN(extY) ? 150 : extY;
         ctx.font = "80px Arial"; ctx.fillText("🧯", 40, drawY + 70);
         ctx.fillStyle = "white"; particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2); ctx.fill(); });
