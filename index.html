@@ -11,7 +11,6 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 85%; max-width: 450px; z-index: 100; 
         }
 
-        /* MAXIMIZED STAGE INTERFACE */
         .checkpoint-box {
             text-align: center; background: white; color: #1e293b;
             width: 100vw; height: 100vh; 
@@ -42,12 +41,38 @@
         #final-meter-container { width: 150px; height: 12px; background: #334155; border-radius: 6px; overflow: hidden; margin: 5px auto; border: 1px solid white; }
         #final-meter-fill { width: 100%; height: 100%; background: #ef4444; }
 
-        .diagram-wrapper { position: relative; width: 280px; height: 320px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 10px auto; flex-shrink: 0; }
-        .part-target { position: absolute; border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 6px; }
-        .filled-correct { background: #1e3a8a !important; color: white !important; font-size: 8px !important; }
-        
+        /* --- STAGE 1 UPDATED CSS --- */
+        .diagram-wrapper { 
+            position: relative; 
+            width: 320px; 
+            height: 400px; 
+            /* Replace the URL below with your actual GitHub raw link */
+            background-image: url('buster_parts.jpeg'); 
+            background-size: contain; 
+            background-repeat: no-repeat; 
+            background-position: center; 
+            margin: 10px auto; 
+            flex-shrink: 0; 
+        }
+        .part-target { 
+            position: absolute; 
+            border: 2px dashed #3b82f6; 
+            background: rgba(0, 0, 0, 0.7); /* Dark "black part" for dropping */
+            border-radius: 4px; 
+            width: 90px; 
+            height: 35px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 8px; 
+            color: white;
+            font-weight: bold;
+        }
+        .filled-correct { background: #1e3a8a !important; color: white !important; font-size: 10px !important; border-style: solid !important; }
+        /* --- END STAGE 1 UPDATED CSS --- */
+
         .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; width: 100%; max-width: 400px; }
-        .choice-box-uniform { padding: 15px; background: #2563eb; color: white; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .choice-box-uniform { padding: 15px; background: #2563eb; color: white; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; text-align: center; }
         .drop-zone { border: 2px dashed #94a3b8; border-radius: 10px; padding: 15px; background: #f1f5f9; min-height: 60px; font-size: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         .filled-correct-grid { background: #dcfce7 !important; border: 2px solid #16a34a !important; color: #166534 !important; }
         
@@ -122,15 +147,18 @@
 
     <div id="quiz-section" class="checkpoint-box">
         <h3>Stage 1: Equipment Check</h3>
-        <p style="font-size: 14px; margin-top: 0;">Drag parts to the extinguisher targets.</p>
+        <p style="font-size: 14px; margin-top: 0;">Drag the correct labels to the dark zones on Buster.</p>
+        
         <div class="diagram-wrapper">
-            <div class="part-target" data-answer="HANDLE" style="top:32px; left:158px;"></div>
-            <div class="part-target" data-answer="LEVER" style="top:72px; left:168px;"></div>
-            <div class="part-target" data-answer="PIN" style="top:40px; left:133px;"></div>
-            <div class="part-target" data-answer="PRESSURE GAUGE" style="top:65px; left:128px;"></div> 
-            <div class="part-target" data-answer="HOSE" style="top:130px; left:70px;"></div>
-            <div class="part-target" data-answer="NOZZLE" style="top:240px; left:90px;"></div>
+            <div class="part-target" data-answer="PIN" style="top: 20px; left: 10px;"></div>
+            <div class="part-target" data-answer="PRESSURE GAUGE" style="top: 100px; left: 10px;"></div>
+            <div class="part-target" data-answer="HOSE" style="top: 210px; left: 10px;"></div>
+            <div class="part-target" data-answer="NOZZLE" style="top: 320px; left: 10px;"></div>
+
+            <div class="part-target" data-answer="HANDLE" style="top: 20px; right: 10px;"></div>
+            <div class="part-target" data-answer="LEVER" style="top: 100px; right: 10px;"></div>
         </div>
+
         <div class="choice-grid" id="s1-choices"></div>
         <button id="quizReturnBtn" class="btn btn-green" style="display:none;" onclick="returnToGame('quiz-section')">CONTINUE →</button>
     </div>
@@ -253,7 +281,6 @@
         requestAnimationFrame(loop);
     }
 
-    // RESTORED FULL DETAILED BACKGROUND
     function drawRepeatingBackground(offset) {
         for (let x = offset % 800 - 800; x < canvas.width + 800; x += 800) {
             ctx.fillStyle = "#55b5d9"; ctx.fillRect(x, 0, 800, 280); 
@@ -263,42 +290,26 @@
             ctx.fillStyle = "#ffffff"; ctx.fillRect(x, 220, 800, 10);
             ctx.fillStyle = "#1e4e79"; ctx.fillRect(x, 230, 800, 40);
             ctx.fillStyle = "#ffffff"; ctx.fillRect(x, 270, 800, 5);
-            
-            // Medical Ward Windows
             ctx.fillStyle = "#b1b9bf"; ctx.fillRect(x + 50, 80, 110, 190);
             ctx.fillStyle = "#cbd5e1"; ctx.fillRect(x + 55, 85, 100, 185);
             ctx.fillStyle = "#94a3b8"; ctx.fillRect(x + 103, 85, 4, 185);
-            
-            // Door Frame
             ctx.fillStyle = "#6b1c23"; ctx.fillRect(x + 90, 80, 30, 5);
-            
-            // Lights
             ctx.fillStyle = "#cbd5e1"; ctx.fillRect(x + 165, 130, 15, 30);
             ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(x + 172, 138, 3, 0, Math.PI*2); ctx.fill();
             ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(x + 172, 152, 3, 0, Math.PI*2); ctx.fill();
-            
-            // Wall Panels
             ctx.fillStyle = "#e6a15c"; ctx.fillRect(x + 280, 80, 85, 190);
             ctx.strokeStyle = "white"; ctx.lineWidth = 4; ctx.strokeRect(x + 280, 80, 85, 190);
             ctx.fillStyle = "silver"; ctx.fillRect(x + 288, 155, 8, 40);
-            
-            // Medical Sign
             ctx.fillStyle = "white"; ctx.fillRect(x + 420, 85, 120, 80);
             ctx.strokeStyle = "#e6a15c"; ctx.strokeRect(x + 420, 85, 120, 80);
             ctx.fillStyle = "#4a90e2"; ctx.beginPath(); ctx.arc(x + 500, 115, 15, 0, Math.PI*2); ctx.fill();
             ctx.fillStyle = "#333"; ctx.fillRect(x + 430, 100, 40, 3); ctx.fillRect(x + 430, 110, 40, 3); ctx.fillRect(x + 430, 120, 40, 3);
-            
-            // Stretchers/Beds Base
             ctx.fillStyle = "#f5b741"; ctx.fillRect(x + 410, 225, 140, 45);
             ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2; ctx.strokeRect(x + 410, 225, 140, 45);
             ctx.fillStyle = "#333"; ctx.fillRect(x + 420, 270, 5, 10); ctx.fillRect(x + 535, 270, 5, 10);
-            
-            // Secondary Door
             ctx.fillStyle = "#e6a15c"; ctx.fillRect(x + 650, 80, 85, 190);
             ctx.strokeStyle = "white"; ctx.strokeRect(x + 650, 80, 85, 190);
             ctx.fillStyle = "silver"; ctx.fillRect(x + 658, 155, 8, 40);
-            
-            // Smoke Detector
             ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(x + 30, 100, 25, 0, Math.PI*2); ctx.fill();
             ctx.strokeStyle = "#999"; ctx.stroke();
             ctx.fillStyle = "#333"; ctx.fillRect(x + 28, 90, 4, 12); ctx.fillRect(x + 30, 98, 10, 4);
@@ -429,10 +440,25 @@
         } else { msg.style.color = "#ef4444"; msg.innerText = "Wrong! ❌ Black tags are deceased/expectant."; }
     }
 
+    // --- STAGE 1 UPDATED SCRIPT ---
     function setupS1() { 
         document.getElementById('quiz-section').style.cssText = 'display: flex !important;'; 
-        document.getElementById('s1-choices').innerHTML = ["PRESSURE GAUGE","LEVER","NOZZLE","PIN","HOSE","HANDLE"].map(c => `<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); 
+        // Reset all targets
+        document.querySelectorAll('#quiz-section .part-target').forEach(t => {
+            t.innerText = "";
+            t.classList.remove('filled-correct');
+        });
+        document.getElementById("quizReturnBtn").style.display = "none";
+
+        // Shuffle parts for the bank
+        const parts = ["PIN","PRESSURE GAUGE","HOSE","NOZZLE","HANDLE","LEVER"];
+        parts.sort(() => Math.random() - 0.5);
+
+        document.getElementById('s1-choices').innerHTML = parts.map(c => 
+            `<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`
+        ).join(''); 
     }
+    // --- END STAGE 1 UPDATED SCRIPT ---
     
     function setupS2() { 
         document.getElementById('phone-section').style.cssText = 'display: flex !important;'; 
@@ -454,15 +480,12 @@
         let items = [];
         if(stg===3) { 
             document.getElementById("grid-title").innerText="Stage 3: Earthquake Protocol"; 
-            document.getElementById("grid-instr").innerText="Drag the person to the actions in order.";
             items=[{t:"🙇 DUCK",c:true,s:0},{t:"🛡️ COVER",c:true,s:1},{t:"✊ HOLD",c:true,s:2},{t:"🏃 RUN",c:false},{t:"🏢 LIFT",c:false},{t:"🪟 WINDOW",c:false}]; 
         } else if(stg===9) {
             document.getElementById("grid-title").innerText="Stage 9: Quezon City Assembly"; 
-            document.getElementById("grid-instr").innerText="Identify the correct assembly areas.";
             items=[{t:"🚗 MAB Parking Area",c:true},{t:"🏢 Street fronting multi-level parking",c:true},{t:"🏥 Sta. Ignaciana fronting SS entrance/exit",c:true},{t:"🏫 Sta. Ignaciana Street fronting COM",c:true},{t:"⛪ Episcopal Church and lawn",c:true},{t:"🛣️ High Street",c:false}];
         } else {
             document.getElementById("grid-title").innerText="Stage 10: Global City Assembly"; 
-            document.getElementById("grid-instr").innerText="Identify the correct assembly areas.";
             items=[{t:"🏨 Rizal Drive across Main Lobby",c:true},{t:"🏢 34th Street",c:true},{t:"🛣️ High Street",c:false},{t:"⛪ Episcopal Church Lawn",c:false},{t:"🚗 MAB Parking Area",c:false},{t:"🍔 BGC Stopover",c:false}];
         }
         items.forEach(i => {
