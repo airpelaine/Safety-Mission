@@ -8,7 +8,7 @@
         
         #pre-game-box, #player-form-box, #start-menu, .checkpoint-box { 
             text-align: center; background: #1e293b; padding: 30px; border-radius: 20px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 85%; max-width: 450px; z-index: 100; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); width: 85%; max-width: 450px; z-index: 100;
         }
         #player-form-box, #start-menu, #game-section, .checkpoint-box { display: none; }
 
@@ -32,9 +32,14 @@
         #final-meter-fill { width: 100%; height: 100%; background: #ef4444; }
 
         .checkpoint-box { background: white; color: #1e293b; max-height: 90vh; overflow-y: auto; }
-        .diagram-wrapper { position: relative; width: 280px; height: 320px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto; }
-        .part-target { position: absolute; border: 2px solid #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 6px; }
-        .filled-correct { background: #1e3a8a !important; color: white !important; }
+        
+        /* Redesigned Diagram CSS */
+        .diagram-wrapper { position: relative; width: 300px; height: 350px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto; display: none; }
+        .part-indicator { position: absolute; width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; z-index: 5; }
+        .part-line { position: absolute; background: #3b82f6; height: 2px; transform-origin: left center; z-index: 4; }
+        .part-target { position: absolute; border: 2px dashed #3b82f6; background: rgba(59, 130, 246, 0.05); border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; font-size: 7px; text-align: center; font-weight: bold; z-index: 6; }
+        
+        .filled-correct { background: #1e3a8a !important; color: white !important; border-style: solid !important; border-width: 1px !important; font-size: 7px !important; }
         .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
         .choice-box-uniform { padding: 12px; background: #2563eb; color: white; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; }
         .drop-zone { border: 2px dashed #94a3b8; border-radius: 10px; padding: 10px; background: #f1f5f9; min-height: 50px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
@@ -107,16 +112,36 @@
 
     <div id="quiz-section" class="checkpoint-box">
         <h3>Scenario 1</h3>
-        <p style="font-size: 13px;">You see smoke in the hospital hallway and find a fire extinguisher nearby. Before you try to put out the fire, you need to make sure you know how the extinguisher works. Tag the different parts correctly by dragging them to the circles so you are ready to use it.</p>
-        <div class="diagram-wrapper">
-            <div class="part-target" data-answer="HANDLE" style="top:32px; left:158px;"></div>
-            <div class="part-target" data-answer="LEVER" style="top:72px; left:168px;"></div>
-            <div class="part-target" data-answer="PIN" style="top:40px; left:133px;"></div>
-            <div class="part-target" data-answer="PRESSURE GAUGE" style="top:65px; left:128px;"></div> 
-            <div class="part-target" data-answer="HOSE" style="top:130px; left:70px;"></div>
-            <div class="part-target" data-answer="NOZZLE" style="top:240px; left:90px;"></div>
+        <p id="s1-text" style="font-size: 13px;">You see smoke in the hospital hallway and find a fire extinguisher nearby. Before you try to put out the fire, you need to make sure you know how the extinguisher works.</p>
+        <button id="get-ext-btn" class="btn" onclick="revealS1Diagram()">GET THE FIRE EXTINGUISHER</button>
+        
+        <div class="diagram-wrapper" id="s1-diagram">
+            <div class="part-indicator" style="top:48px; left:140px;"></div>
+            <div class="part-line" style="top:52px; left:144px; width:40px; transform:rotate(-20deg);"></div>
+            <div class="part-target" data-answer="PIN" style="top:20px; left:185px;"></div>
+            
+            <div class="part-indicator" style="top:40px; left:165px;"></div>
+            <div class="part-line" style="top:44px; left:169px; width:60px; transform:rotate(-45deg);"></div>
+            <div class="part-target" data-answer="HANDLE" style="top:-10px; left:225px;"></div>
+            
+            <div class="part-indicator" style="top:75px; left:175px;"></div>
+            <div class="part-line" style="top:79px; left:179px; width:55px; transform:rotate(10deg);"></div>
+            <div class="part-target" data-answer="LEVER" style="top:70px; left:235px;"></div>
+
+            <div class="part-indicator" style="top:75px; left:135px;"></div>
+            <div class="part-line" style="top:79px; left:135px; width:60px; transform:rotate(170deg);"></div>
+            <div class="part-target" data-answer="PRESSURE GAUGE" style="top:70px; left:25px;"></div>
+
+            <div class="part-indicator" style="top:140px; left:80px;"></div>
+            <div class="part-line" style="top:144px; left:80px; width:50px; transform:rotate(160deg);"></div>
+            <div class="part-target" data-answer="HOSE" style="top:150px; left:-5px;"></div>
+
+            <div class="part-indicator" style="top:250px; left:100px;"></div>
+            <div class="part-line" style="top:254px; left:100px; width:70px; transform:rotate(150deg);"></div>
+            <div class="part-target" data-answer="NOZZLE" style="top:280px; left:10px;"></div>
         </div>
-        <div class="choice-grid" id="s1-choices"></div>
+        
+        <div class="choice-grid" id="s1-choices" style="display:none;"></div>
         <button id="quizReturnBtn" class="btn btn-green" onclick="returnToGame('quiz-section')">CONTINUE →</button>
     </div>
 
@@ -311,9 +336,15 @@
             const target = document.elementFromPoint(e.clientX, e.clientY); 
             activeItem.style.visibility = 'visible';
             
-            if (target && target.classList.contains("part-target") && target.dataset.answer === activeItem.innerText) {
-                target.innerText = activeItem.innerText; target.classList.add("filled-correct"); activeItem.style.display = "none";
-                if (document.querySelectorAll('#quiz-section .filled-correct').length === 6) document.getElementById("quizReturnBtn").style.display = "block";
+            if (target && target.classList.contains("part-target")) {
+                if (target.dataset.answer === activeItem.innerText) {
+                    target.innerText = activeItem.innerText; 
+                    target.classList.add("filled-correct"); 
+                    activeItem.style.display = "none";
+                    if (document.querySelectorAll('#quiz-section .filled-correct').length === 6) document.getElementById("quizReturnBtn").style.display = "block";
+                } else {
+                    alert("Error!");
+                }
             }
             if (target && target.classList.contains("drop-zone")) handleGridDrop(activeItem, target);
             if (target && target.classList.contains("t-trg") && target.id === "slot-"+activeItem.innerText) {
@@ -381,7 +412,23 @@
         gameActive = true; updateHUD(); requestAnimationFrame(loop);
     }
 
-    function setupS1() { document.getElementById('quiz-section').style.display = 'block'; document.getElementById('s1-choices').innerHTML = ["PRESSURE GAUGE","LEVER","NOZZLE","PIN","HOSE","HANDLE"].map(c => `<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); }
+    function setupS1() { 
+        document.getElementById('quiz-section').style.display = 'block'; 
+        document.getElementById('get-ext-btn').style.display = 'block';
+        document.getElementById('s1-diagram').style.display = 'none';
+        document.getElementById('s1-choices').style.display = 'none';
+        document.getElementById('quizReturnBtn').style.display = 'none';
+        document.getElementById('s1-text').innerText = "You see smoke in the hospital hallway and find a fire extinguisher nearby. Before you try to put out the fire, you need to make sure you know how the extinguisher works.";
+    }
+
+    function revealS1Diagram() {
+        document.getElementById('get-ext-btn').style.display = 'none';
+        document.getElementById('s1-text').innerText = "Tag the different parts correctly by dragging them to the circles so you are ready to use it.";
+        document.getElementById('s1-diagram').style.display = 'block';
+        document.getElementById('s1-choices').style.display = 'grid';
+        document.getElementById('s1-choices').innerHTML = ["PRESSURE GAUGE","LEVER","NOZZLE","PIN","HOSE","HANDLE"].sort(()=>Math.random()-0.5).map(c => `<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); 
+    }
+
     function setupS2() { document.getElementById('phone-section').style.display = 'block'; document.getElementById("phone-display").innerText = ""; }
     function pressKey(n){ const d=document.getElementById("phone-display"); if(d.innerText.length<4) d.innerText+=n; }
     function makeCall() { 
@@ -501,13 +548,11 @@
     }
 
     function revealCodeRedirect() {
-        // Unique code generation logic
         const date = new Date();
         const codePart1 = playerID.slice(-3);
         const codePart2 = playerLocation.substring(0, 2);
         const codePart3 = date.getSeconds() + date.getMinutes();
         const uniqueCode = `SLMC-${codePart2}-${codePart1}${codePart3}`;
-        
         const targetUrl = `https://script.google.com/a/macros/stlukes.com.ph/s/AKfycbzcqiGztCFof_d6KkI0lKw8UTtFfJZ0RSVFI8WbiuCGtbXYXeCv9hqtipcvAhQPpV3O/exec?code=${uniqueCode}`;
         window.open(targetUrl, "_blank");
     }
