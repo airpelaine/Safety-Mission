@@ -33,7 +33,6 @@
 
         .checkpoint-box { background: white; color: #1e293b; max-height: 90vh; overflow-y: auto; }
         
-        /* Redesigned Diagram CSS */
         .diagram-wrapper { position: relative; width: 300px; height: 350px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto; display: none; }
         .part-indicator { position: absolute; width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; z-index: 5; }
         .part-line { position: absolute; background: #3b82f6; height: 2px; transform-origin: left center; z-index: 4; }
@@ -116,28 +115,28 @@
         <button id="get-ext-btn" class="btn" onclick="revealS1Diagram()">GET THE FIRE EXTINGUISHER</button>
         
         <div class="diagram-wrapper" id="s1-diagram">
-            <div class="part-indicator" style="top:48px; left:140px;"></div>
-            <div class="part-line" style="top:52px; left:144px; width:40px; transform:rotate(-20deg);"></div>
-            <div class="part-target" data-answer="PIN" style="top:20px; left:185px;"></div>
+            <div class="part-indicator" style="top:62px; left:146px;"></div>
+            <div class="part-line" style="top:65px; left:150px; width:36px; transform:rotate(-60deg);"></div>
+            <div class="part-target" data-answer="PIN" style="top:-10px; left:150px;"></div>
             
-            <div class="part-indicator" style="top:40px; left:165px;"></div>
-            <div class="part-line" style="top:44px; left:169px; width:60px; transform:rotate(-45deg);"></div>
-            <div class="part-target" data-answer="HANDLE" style="top:-10px; left:225px;"></div>
+            <div class="part-indicator" style="top:45px; left:180px;"></div>
+            <div class="part-line" style="top:46px; left:188px; width:56px; transform:rotate(-20deg);"></div>
+            <div class="part-target" data-answer="HANDLE" style="top:15px; left:235px;"></div>
             
             <div class="part-indicator" style="top:75px; left:175px;"></div>
-            <div class="part-line" style="top:79px; left:179px; width:55px; transform:rotate(10deg);"></div>
+            <div class="part-line" style="top:77px; left:179px; width:55px; transform:rotate(10deg);"></div>
             <div class="part-target" data-answer="LEVER" style="top:70px; left:235px;"></div>
 
-            <div class="part-indicator" style="top:75px; left:135px;"></div>
-            <div class="part-line" style="top:79px; left:135px; width:60px; transform:rotate(170deg);"></div>
+            <div class="part-indicator" style="top:75px; left:140px;"></div>
+            <div class="part-line" style="top:79px; left:140px; width:70px; transform:rotate(170deg);"></div>
             <div class="part-target" data-answer="PRESSURE GAUGE" style="top:70px; left:25px;"></div>
 
             <div class="part-indicator" style="top:140px; left:80px;"></div>
-            <div class="part-line" style="top:144px; left:80px; width:50px; transform:rotate(160deg);"></div>
+            <div class="part-line" style="top:144px; left:81px; width:45px; transform:rotate(160deg);"></div>
             <div class="part-target" data-answer="HOSE" style="top:150px; left:-5px;"></div>
 
             <div class="part-indicator" style="top:250px; left:100px;"></div>
-            <div class="part-line" style="top:254px; left:100px; width:70px; transform:rotate(150deg);"></div>
+            <div class="part-line" style="top:254px; left:100px; width:61px; transform:rotate(150deg);"></div>
             <div class="part-target" data-answer="NOZZLE" style="top:280px; left:10px;"></div>
         </div>
         
@@ -446,7 +445,7 @@
             document.getElementById("grid-title").innerText="Scenario 3"; 
             document.getElementById("grid-instr").innerText="While you are fighting a small fire, the building starts shaking—it’s a strong earthquake! Forget the fire for a moment; you need to protect yourself from falling objects immediately. Drag the person below to the actions in the correct order (Duck, Cover, Hold).";
             items=[{t:"🙇 DUCK",c:true,s:0},{t:"🛡️ COVER",c:true,s:1},{t:"✊ HOLD",c:true,s:2},{t:"🏃 RUN",c:false},{t:"🏢 LIFT",c:false},{t:"🪟 WINDOW",c:false}]; 
-        } else if(stg===9) {
+        } else if(stg===9) { 
             document.getElementById("grid-title").innerText="Scenario 9"; 
             document.getElementById("grid-instr").innerText="The fire in the Main Building is too large to handle, and everyone is being ordered to evacuate. You are on the 3rd floor. Exit to the closest correct safe evacuation spot for the Quezon City campus. Drag the person to the approved assembly area.";
             items=[{t:"🚗 MAB Parking Area",c:true},{t:"🏢 Multi-level parking street",c:true},{t:"🏥 Sta. Ignaciana (SS exit)",c:true},{t:"🏫 Sta. Ignaciana (COM)",c:true},{t:"⛪ Episcopal Church lawn",c:true},{t:"🛣️ High Street",c:false}];
