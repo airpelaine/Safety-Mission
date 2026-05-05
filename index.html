@@ -40,9 +40,25 @@
         .diagram-wrapper { position: relative; width: 300px; height: 350px; background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpPUDif2LkKX4bx3_sXJquY6_nF20kS_56aw&s'); background-size: contain; background-repeat: no-repeat; background-position: center; margin: 0 auto; display: none; }
         .part-indicator { position: absolute; width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; z-index: 5; }
         .part-line { position: absolute; background: #3b82f6; height: 2px; transform-origin: left center; z-index: 4; }
-        .part-target { position: absolute; border: 2px dashed #3b82f6; background: rgba(59, 130, 246, 0.05); border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; font-size: 7px; text-align: center; font-weight: bold; z-index: 6; }
         
-        .filled-correct { background: #1e3a8a !important; color: white !important; border-style: solid !important; border-width: 1px !important; font-size: 7px !important; }
+        /* Updated to Rectangle */
+        .part-target { 
+            position: absolute; 
+            border: 2px dashed #3b82f6; 
+            background: rgba(59, 130, 246, 0.1); 
+            border-radius: 4px; 
+            width: 75px; 
+            height: 35px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 8px; 
+            text-align: center; 
+            font-weight: bold; 
+            z-index: 6; 
+        }
+        
+        .filled-correct { background: #1e3a8a !important; color: white !important; border-style: solid !important; border-width: 1px !important; font-size: 8px !important; }
         .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
         .choice-box-uniform { padding: 12px; background: #2563eb; color: white; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold; }
         .drop-zone { border: 2px dashed #94a3b8; border-radius: 10px; padding: 10px; background: #f1f5f9; min-height: 50px; font-size: 11px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
@@ -126,24 +142,30 @@
         <p id="s1-text" style="font-size: 13px;">You’re walking the hallway and see a small trash fire. You grab the nearest extinguisher. You need to know your tools before you act.</p>
         <button id="get-ext-btn" class="btn" onclick="revealS1Diagram()">I'M READY</button>
         <div class="diagram-wrapper" id="s1-diagram">
+
             <div class="part-indicator" style="top:62px; left:146px;"></div>
-            <div class="part-line" style="top:65px; left:150px; width:36px; transform:rotate(-60deg);"></div>
-            <div class="part-target" data-answer="PIN" style="top:-10px; left:150px;"></div>
+            <div class="part-line" style="top:65px; left:150px; width:36px; transform:rotate(-90deg);"></div>
+            <div class="part-target" data-answer="PIN" style="top:-7px; left:115px;"></div>
+            
             <div class="part-indicator" style="top:45px; left:180px;"></div>
-            <div class="part-line" style="top:46px; left:188px; width:56px; transform:rotate(-20deg);"></div>
-            <div class="part-target" data-answer="HANDLE" style="top:15px; left:235px;"></div>
+            <div class="part-line" style="top:46px; left:188px; width:41px; transform:rotate(-20deg);"></div>
+            <div class="part-target" data-answer="LEVER" style="top:15px; left:227px;"></div>
+            
             <div class="part-indicator" style="top:75px; left:175px;"></div>
-            <div class="part-line" style="top:77px; left:179px; width:55px; transform:rotate(10deg);"></div>
-            <div class="part-target" data-answer="LEVER" style="top:70px; left:235px;"></div>
+            <div class="part-line" style="top:77px; left:179px; width:50px; transform:rotate(10deg);"></div>
+            <div class="part-target" data-answer="HANDLE" style="top:60px; left:228px;"></div>
+            
             <div class="part-indicator" style="top:75px; left:140px;"></div>
-            <div class="part-line" style="top:79px; left:140px; width:70px; transform:rotate(170deg);"></div>
-            <div class="part-target" data-answer="PRESSURE GAUGE" style="top:70px; left:25px;"></div>
+            <div class="part-line" style="top:79px; left:140px; width:60px; transform:rotate(180deg);"></div>
+            <div class="part-target" data-answer="PRESSURE GAUGE" style="top:60px; left:3px;"></div>
+            
             <div class="part-indicator" style="top:140px; left:80px;"></div>
-            <div class="part-line" style="top:144px; left:81px; width:45px; transform:rotate(160deg);"></div>
-            <div class="part-target" data-answer="HOSE" style="top:150px; left:-5px;"></div>
+            <div class="part-line" style="top:144px; left:81px; width:35px; transform:rotate(160deg);"></div>
+            <div class="part-target" data-answer="HOSE" style="top:142px; left:-30px;"></div>
+            
             <div class="part-indicator" style="top:250px; left:100px;"></div>
-            <div class="part-line" style="top:254px; left:100px; width:61px; transform:rotate(150deg);"></div>
-            <div class="part-target" data-answer="NOZZLE" style="top:280px; left:10px;"></div>
+            <div class="part-line" style="top:254px; left:100px; width:35px; transform:rotate(180deg);"></div>
+            <div class="part-target" data-answer="NOZZLE" style="top:235px; left:-10px;"></div>
         </div>
         <div class="choice-grid" id="s1-choices" style="display:none;"></div>
         <button id="quizReturnBtn" class="btn btn-green" style="display:none;" onclick="showBusterComment()">GRAB IT & GO</button>
