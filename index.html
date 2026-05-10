@@ -73,9 +73,41 @@
         .slot-correct { background: #dcfce7; border-bottom: 2px solid #16a34a; color: #166534; }
         
         #buster-error-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; z-index: 5000; width: 90%; max-width: 400px; border: 4px solid #ef4444; }
+
+        #audio-control {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            background: #1e293b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 9999;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            border: 2px solid #334155;
+        }
+
+        #audio-control:hover {
+            transform: scale(1.05);
+        }
+
+        #audio-icon {
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
+    <div id="audio-control" onclick="toggleAudio()">
+        <span id="audio-icon">🔊</span>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="Skyward_Ascent.mp3" type="audio/mpeg">
+    </audio>
 
     <div id="pre-game-box">
         <h1 style="color: #60a5fa; margin-bottom: 10px;">Blaze Buster</h1>
@@ -771,6 +803,36 @@
         const uniqueCode = `SLMC-${codePart2}-${codePart1}${codePart3}`;
         const targetUrl = `https://script.google.com/a/macros/stlukes.com.ph/s/AKfycbzcqiGztCFof_d6KkI0lKw8UTtFfJZ0RSVFI8WbiuCGtbXYXeCv9hqtipcvAhQPpV3O/exec?code=${uniqueCode}`;
         window.open(targetUrl, "_blank");
+    }
+
+    let audioEnabled = false;
+    const bgMusic = document.getElementById("bgMusic");
+    const audioIcon = document.getElementById("audio-icon");
+
+    function startAudioOnce() {
+        if (!audioEnabled) {
+            bgMusic.volume = 0.5;
+            bgMusic.play().then(() => {
+                audioEnabled = true;
+                audioIcon.innerText = "🔊";
+            }).catch(() => {
+                // autoplay blocked — will start on next user click
+            });
+        }
+    }
+
+    // call this on ANY first interaction
+    document.addEventListener("click", startAudioOnce, { once: true });
+    document.addEventListener("touchstart", startAudioOnce, { once: true });
+
+    function toggleAudio() {
+        if (bgMusic.paused) {
+            bgMusic.play();
+            audioIcon.innerText = "🔊";
+        } else {
+            bgMusic.pause();
+            audioIcon.innerText = "🔇";
+        }
     }
 </script>
 </body>
