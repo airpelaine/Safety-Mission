@@ -41,10 +41,9 @@
         .part-indicator { position: absolute; width: 8px; height: 8px; background: #3b82f6; border-radius: 50%; z-index: 5; }
         .part-line { position: absolute; background: #3b82f6; height: 2px; transform-origin: left center; z-index: 4; }
         
-        /* WAVE 1 TARGET BOXES - Made larger for easier dropping */
         .part-target { 
             position: absolute; border: 2px dashed #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 4px; 
-            width: 85px; height: 40px; display: flex; align-items: center; justify-content: center; 
+            width: 75px; height: 35px; display: flex; align-items: center; justify-content: center; 
             font-size: 8px; text-align: center; font-weight: bold; z-index: 6; 
         }
         
@@ -71,14 +70,42 @@
         .rainbow-box { width: 52px; height: 70px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; color: white; text-transform: uppercase; flex-shrink: 0; }
         .race-letter-box { width: 85px; height: 85px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 2px solid #cbd5e1; flex-direction: column; text-align: center; padding: 2px; }
         
-        /* WAVE 4 PASS TARGETS - Expanded hitboxes */
-        .blank-inline { display: inline-flex; width: 100px; height: 35px; border-bottom: 2px solid #3b82f6; margin: 5px 8px; vertical-align: middle; color: #2563eb; font-weight: bold; justify-content: center; align-items: center; background: rgba(59, 130, 246, 0.05); }
-        .slot-correct { background: #dcfce7; border-bottom: 2px solid #16a34a; color: #166534; }
+        /* UPDATED: Wider and more visible blanks for PASS */
+        .blank-inline { 
+            display: inline-flex; width: 90px; height: 28px; 
+            border-bottom: 3px solid #3b82f6; margin: 0 5px; 
+            vertical-align: middle; color: #2563eb; font-weight: bold; 
+            justify-content: center; align-items: center;
+            background: rgba(59, 130, 246, 0.05);
+        }
+        .slot-correct { background: #dcfce7; border-bottom: 3px solid #16a34a; color: #166534; }
         
         #buster-error-box { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; z-index: 5000; width: 90%; max-width: 400px; border: 4px solid #ef4444; }
 
-        #audio-control { position: fixed; top: 15px; right: 15px; width: 45px; height: 45px; background: #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 9999; box-shadow: 0 5px 15px rgba(0,0,0,0.4); border: 2px solid #334155; }
-        #audio-icon { font-size: 20px; }
+        #audio-control {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            background: #1e293b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 9999;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            border: 2px solid #334155;
+        }
+
+        #audio-control:hover {
+            transform: scale(1.05);
+        }
+
+        #audio-icon {
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
@@ -220,7 +247,7 @@
         <button id="s4-start-btn" class="btn" onclick="startPassTask()">STOP THE BLAZE</button>
         <div id="s4-content-ui" style="display:none;">
             <p style="font-size: 13px;">What is the correct sequence to activate the extinguisher and put out the fire? You must complete the sequence by dragging and dropping them correctly.</p>
-            <div style="text-align:left; font-size:13px; background:#f8fafc; padding:25px; border-radius:12px; color:black; line-height:4;">
+            <div style="text-align:left; font-size:13px; background:#f8fafc; padding:15px; border-radius:12px; color:black; line-height:2.5;">
                 Pull the <span class="blank-inline t-trg" id="slot-PIN"></span>,<br>
                 Aim the <span class="blank-inline t-trg" id="slot-NOZZLE"></span> at base,<br>
                 Squeeze the <span class="blank-inline t-trg" id="slot-LEVER"></span>,<br>
@@ -243,6 +270,10 @@
         <div class="buster-character" style="font-size: 80px;">🧯</div>
         <h1 style="color:#2563eb; margin-top: 10px;">MISSION ACCOMPLISHED! 🏆</h1>
         <div id="final-congrats-bubble" class="speech-bubble">Great work, Partner! You've mastered the fire safety protocols. Now, let's get you that certificate!</div>
+        <div style="text-align: left; font-size: 13px; padding: 15px; background: #f8fafc; border-radius: 10px; border-left: 4px solid #3b82f6; margin-bottom: 15px;">
+            <p>To claim your certificate:</p>
+            <p>1. Click <b>REVEAL MY CODE</b>.<br>2. <b>Copy</b> the code from the new tab.<br>3. <b>Paste</b> it into your verification form.</p>
+        </div>
         <button class="btn" style="background:#3b82f6;" onclick="revealCodeRedirect()">REVEAL MY CODE</button>
     </div>
 
@@ -251,7 +282,9 @@
     let currentScore = 0, totalExtinguished = 0, wavesCleared = 0;
     let extY = 150, targetY = 150, bgOffset = 0, playerID = "", playerLocation = "";
     let majorBlazeActive = false, bossHealth = 100, bossX = 1000;
+    const totalWavesNeeded = 10;
     const scrollSpeed = 3;
+    
     let gStep = 0, rStep = 0, pcCount = 0;
     let raceSelections = [];
 
@@ -281,9 +314,20 @@
     let storyIndex = 0;
 
     function triggerErr() {
+        const msgs = [
+            "Whoops! That's not the right move, Partner. Try again!",
+            "Careful! We need to follow the protocol exactly. Let's try that one more time.",
+            "Not quite! Remember your training. Give it another shot!",
+            "Buster says: 'Check your steps!' Let's try again."
+        ];
+        document.getElementById('buster-error-text').innerText = msgs[Math.floor(Math.random() * msgs.length)];
         document.getElementById('buster-error-box').style.display = 'block';
     }
-    function closeError() { document.getElementById('buster-error-box').style.display = 'none'; }
+
+    function closeError() {
+        document.getElementById('buster-error-box').style.display = 'none';
+    }
+
     function showForm() { document.getElementById('pre-game-box').style.display = 'none'; document.getElementById('player-form-box').style.display = 'block'; }
     function validate() {
         const loc = document.getElementById('user-location').value;
@@ -392,41 +436,58 @@
         });
         document.addEventListener("pointerup", (e) => {
             if (!activeItem) return;
+            
+            // MAGNETIC SNAPPING LOGIC REWORKED
+            const itemRect = activeItem.getBoundingClientRect();
+            const itemX = itemRect.left + itemRect.width / 2;
+            const itemY = itemRect.top + itemRect.height / 2;
+
             activeItem.style.visibility = 'hidden'; 
             
             let snappingTarget = null;
             const targets = document.querySelectorAll(".part-target, .drop-zone, .t-trg");
-            
-            // MAGNETIC RADIUS INCREASED TO 120px FOR EASIER PLAY
+            const detectionRadius = 60; // Increased radius for easier landing
+
             targets.forEach(t => {
                 const rect = t.getBoundingClientRect();
                 const centerX = rect.left + rect.width / 2;
                 const centerY = rect.top + rect.height / 2;
-                const dist = Math.sqrt(Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2));
-                if (dist < 120) snappingTarget = t; 
+                const dist = Math.sqrt(Math.pow(itemX - centerX, 2) + Math.pow(itemY - centerY, 2));
+                if (dist < detectionRadius) snappingTarget = t;
             });
 
             activeItem.style.visibility = 'visible';
             
-            if (snappingTarget && snappingTarget.classList.contains("part-target")) {
-                // WAVE 1 LOGIC - Robust check
-                const draggedVal = activeItem.innerText.trim().toUpperCase();
-                const answerVal = snappingTarget.dataset.answer.toUpperCase();
-                if (answerVal === draggedVal) {
-                    snappingTarget.innerText = activeItem.innerText.trim(); snappingTarget.classList.add("filled-correct"); activeItem.style.display = "none";
-                    if (document.querySelectorAll('#quiz-section .filled-correct').length === 6) document.getElementById("quizReturnBtn").style.display = "block";
-                } else triggerErr();
+            if (snappingTarget) {
+                // EXTINGUISHER DIAGRAM LOGIC
+                if (snappingTarget.classList.contains("part-target")) {
+                    if (snappingTarget.dataset.answer === activeItem.innerText.trim()) {
+                        snappingTarget.innerText = activeItem.innerText; 
+                        snappingTarget.classList.add("filled-correct"); 
+                        activeItem.style.display = "none";
+                        if (document.querySelectorAll('#quiz-section .filled-correct').length === 6) 
+                            document.getElementById("quizReturnBtn").style.display = "block";
+                    } else { triggerErr(); }
+                }
+                // EARTHQUAKE / EVACUATION LOGIC
+                else if (snappingTarget.classList.contains("drop-zone")) {
+                    handleGridDrop(activeItem, snappingTarget);
+                }
+                // PASS SEQUENCE LOGIC (Wave 4)
+                else if (snappingTarget.classList.contains("t-trg")) {
+                    const cleanText = activeItem.innerText.trim();
+                    if (snappingTarget.id === "slot-" + cleanText) {
+                        snappingTarget.innerText = cleanText; 
+                        snappingTarget.classList.add("slot-correct"); 
+                        activeItem.style.display = "none";
+                        pcCount++; 
+                        if(pcCount === 4) document.getElementById("passReturnBtn").style.display = "block";
+                    } else { triggerErr(); }
+                }
             }
-            else if (snappingTarget && snappingTarget.classList.contains("drop-zone")) handleGridDrop(activeItem, snappingTarget);
-            else if (snappingTarget && snappingTarget.classList.contains("t-trg")) {
-                // WAVE 4 LOGIC - Robust check
-                const draggedVal = activeItem.innerText.trim().toUpperCase();
-                if (snappingTarget.id === "slot-" + draggedVal) {
-                    snappingTarget.innerText = activeItem.innerText.trim(); snappingTarget.classList.add("slot-correct"); activeItem.style.display = "none";
-                    pcCount++; if(pcCount===4) document.getElementById("passReturnBtn").style.display = "block";
-                } else triggerErr();
-            }
-            activeItem.style.position = 'static'; activeItem = null;
+            activeItem.style.position = 'static'; 
+            activeItem.style.zIndex = '';
+            activeItem = null;
         });
     }
 
@@ -450,7 +511,9 @@
             });
             if(majorBlazeActive && bossX <= 550 && Math.abs(p.x - bossX) < 100 && Math.abs(p.y - 200) < 120) {
                 bossHealth -= 1.5; document.getElementById('final-meter-fill').style.width = bossHealth + "%";
-                if(bossHealth <= 0) { totalExtinguished++; updateHUD(); majorBlazeActive = false; triggerCheckpoint(); }
+                if(bossHealth <= 0) { 
+                    totalExtinguished++; updateHUD(); majorBlazeActive = false; triggerCheckpoint(); 
+                }
             }
         });
         if(majorBlazeActive && bossX > 550) bossX -= 4;
@@ -463,93 +526,181 @@
         document.getElementById('game-section').style.display = 'none';
         document.getElementById('major-blaze-box').style.display = 'none';
         const wave = wavesCleared + 1;
-        if(wave === 1) setupS1(); else if(wave === 2) setupS2(); else if(wave === 3) setupGrid(3);
-        else if(wave === 4) setupS4(); else if(wave === 5) setupS5(); else if(wave === 6) setupS6(6);
-        else if(wave === 7) setupS6(7); else if(wave === 8) setupS6(8); else if(wave === 9) setupGrid(9);
+        if(wave === 1) setupS1();
+        else if(wave === 2) setupS2();
+        else if(wave === 3) setupGrid(3);
+        else if(wave === 4) setupS4();
+        else if(wave === 5) setupS5();
+        else if(wave === 6) setupS6(6);
+        else if(wave === 7) setupS6(7);
+        else if(wave === 8) setupS6(8);
+        else if(wave === 9) setupGrid(9);
         else if(wave === 10) setupGrid(10);
     }
 
     function showBusterComment() {
-        document.querySelectorAll('.checkpoint-box').forEach(c => c.style.display = 'none');
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('phone-section').style.display = 'none';
+        document.getElementById('grid-stage-section').style.display = 'none';
+        document.getElementById('pass-section').style.display = 'none';
+        document.getElementById('logic-box').style.display = 'none';
+        
         document.getElementById('buster-comment-text').innerText = busterComments[wavesCleared];
         document.getElementById('buster-comment-box').style.display = 'block';
+        
         const btn = document.getElementById('busterCommentBtn');
-        btn.innerText = (wavesCleared === 9) ? "CLAIM MY MISSION REWARDS →" : "CONTINUE TO EXTINGUISH FIRE →";
+        if (wavesCleared === 9) {
+            btn.innerText = "CLAIM MY MISSION REWARDS →";
+        } else {
+            btn.innerText = "CONTINUE TO EXTINGUISH FIRE →";
+        }
     }
 
     function finalReturnToHallway() {
         document.getElementById('buster-comment-box').style.display = 'none';
-        wavesCleared++; document.getElementById('p-bar-main').style.width = (wavesCleared / 10 * 100) + "%";
+        wavesCleared++;
+        document.getElementById('p-bar-main').style.width = (wavesCleared / 10 * 100) + "%";
         if(wavesCleared >= 10) { document.getElementById('congrats').style.display = 'block'; return; }
-        document.getElementById('game-section').style.display = 'block'; gameActive = true; updateHUD(); requestAnimationFrame(loop);
+        document.getElementById('game-section').style.display = 'block';
+        gameActive = true; updateHUD(); requestAnimationFrame(loop);
     }
 
-    function setupS1() { document.getElementById('quiz-section').style.display = 'block'; document.getElementById('get-ext-btn').style.display = 'block'; }
+    function setupS1() { 
+        document.getElementById('quiz-section').style.display = 'block'; 
+        document.getElementById('get-ext-btn').style.display = 'block';
+        document.getElementById('s1-diagram').style.display = 'none';
+        document.getElementById('quizReturnBtn').style.display = 'none';
+    }
+
     function revealS1Diagram() {
         document.getElementById('get-ext-btn').style.display = 'none';
+        document.getElementById('s1-text').innerText = "Do you know your equipment? Match the labels so you can get to work. You must drag and drop the parts.";
         document.getElementById('s1-diagram').style.display = 'block';
         document.getElementById('s1-choices').style.display = 'grid';
         document.getElementById('s1-choices').innerHTML = ["PRESSURE GAUGE","LEVER","NOZZLE","PIN","HOSE","HANDLE"].sort(()=>Math.random()-0.5).map(c => `<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); 
     }
 
-    function setupS2() { document.getElementById('phone-section').style.display = 'block'; document.getElementById("phone-display").innerText = ""; }
+    function setupS2() { 
+        document.getElementById('phone-section').style.display = 'block'; 
+        document.getElementById("phone-display").innerText = ""; 
+        document.getElementById('phoneReturnBtn').style.display = 'none';
+    }
+    
     function pressKey(n){ const d=document.getElementById("phone-display"); if(d.innerText.length<4) d.innerText+=n; }
     function delKey(){ const d=document.getElementById("phone-display"); d.innerText = d.innerText.slice(0, -1); }
-    function makeCall() { if(document.getElementById("phone-display").innerText === "1111") document.getElementById('phoneReturnBtn').style.display='block'; else triggerErr(); }
+    function makeCall() { 
+        const d = document.getElementById("phone-display");
+        if(d.innerText === "1111") { d.innerText = "Calling....."; setTimeout(() => document.getElementById('phoneReturnBtn').style.display='block', 1000); } 
+        else { triggerErr(); d.innerText = ""; } 
+    }
 
     function setupGrid(stg){
         document.getElementById("grid-stage-section").style.display = 'block';
         document.getElementById("grid-start-btn").style.display = 'block';
         document.getElementById("grid-content-ui").style.display = 'none';
+        document.getElementById("gridNextBtn").style.display="none";
+        
         const grid = document.getElementById("main-drop-grid"); grid.innerHTML = "";
-        gStep = 0; let items = [];
+        gStep = 0;
+        let items = [];
+
         if(stg===3) { 
             document.getElementById("grid-title").innerText="Earthquake Alert"; 
             document.getElementById("grid-instr").innerText="Just as you’re about to aim, the ground starts shaking. A fire is dangerous, but falling ceiling tiles are an immediate threat.";
-            items=[{t:"🙇 DUCK",c:true,s:0},{t:"🛡️ COVER",c:true,s:1},{t:"✊ HOLD",c:true,s:2},{t:"🏃 RUN",c:false},{t:"🏢 LIFT",c:false}]; 
-        } else if(stg===9) { 
-            document.getElementById("grid-title").innerText="QC Evacuation"; 
-            document.getElementById("grid-instr").innerText="The fire in the Main Building has grown too large. Lead people to the nearest safe assembly area for QC.";
-            items=[{t:"Sta. Ignaciana St.",c:true},{t:"MAB Parking",c:false},{t:"E. Rodriguez Lobby",c:false}];
-        } else if(stg===10) { 
-            document.getElementById("grid-title").innerText="GC Evacuation"; 
-            document.getElementById("grid-instr").innerText="Lead your team out of the building to the designated outdoor safe zone for GC.";
-            items=[{t:"Rizal Drive",c:true},{t:"High Street",c:false},{t:"34th Street",c:false}];
+            document.getElementById("grid-start-btn").innerText = "PROTECT YOURSELF";
+            document.getElementById("gridNextBtn").innerText = "STAYING SAFE";
+            items=[{t:"🙇 DUCK",c:true,s:0},{t:"🛡️ COVER",c:true,s:1},{t:"✊ HOLD",c:true,s:2},{t:"🏃 RUN",c:false},{t:"🏢 LIFT",c:false},{t:"📢 SHOUT",c:false}]; 
+        } 
+        else if(stg===9) { 
+            document.getElementById("grid-title").innerText="Get Out (St. Luke's Medical Center - Quezon City)"; 
+            document.getElementById("grid-instr").innerText="The fire in the Main Building has grown too large. The order comes over the radio: EVACUATE. You are in the St. Luke's Quezon City campus and need to lead people to the street.";
+            document.getElementById("grid-start-btn").innerText = "MOVING TO ASSEMBLY AREA";
+            document.getElementById("gridNextBtn").innerText = "MOVING TO SAFETY";
+            items=[{t:"Sta. Ignaciana St.",c:true},{t:"MAB Parking",c:false},{t:"E. Rodriguez Lobby",c:false},{t:"Canteen Entrance",c:false}];
+        } 
+        else if(stg===10) { 
+            document.getElementById("grid-title").innerText="Get Out (St. Luke's Medical Center - Global City)"; 
+            document.getElementById("grid-instr").innerText="You are now at the St. Luke's Global City campus. You must lead your team out of the building to the designated outdoor safe zone.";
+            document.getElementById("grid-start-btn").innerText = "MOVING TO ASSEMBLY AREA";
+            document.getElementById("gridNextBtn").innerText = "MOVING TO SAFETY";
+            items=[{t:"Rizal Drive",c:true},{t:"High Street",c:false},{t:"34th Street",c:false},{t:"Parking B1",c:false}];
         }
+
         items.sort(()=>Math.random()-0.5).forEach(i => {
             let z=document.createElement("div"); z.className="drop-zone"; z.innerText=i.t; z.dataset.correct=i.c; if(i.s!==undefined)z.dataset.step=i.s; grid.appendChild(z);
         });
     }
 
-    function startGridTask() { document.getElementById("grid-start-btn").style.display = 'none'; document.getElementById("grid-content-ui").style.display = 'block'; }
+    function startGridTask() {
+        document.getElementById("grid-start-btn").style.display = 'none';
+        document.getElementById("grid-content-ui").style.display = 'block';
+        
+        if(wavesCleared === 2) { 
+             document.getElementById("grid-instr").innerText = "Earthquake! Drop the extinguisher and protect yourself. What are the three steps to safety? You must drag the person to the correct sequence during an earthquake.";
+        }
+        else if(wavesCleared === 8) { 
+            document.getElementById("grid-instr").innerText = "You are at the hospital canteen. You need to lead the people to the nearest safe assembly area for the St. Luke's Quezon City? You must drag the person below to safety.";
+        } 
+        else if(wavesCleared === 9) { 
+            document.getElementById("grid-instr").innerText = "You are at the 5th floor main building when the alarms scream. You need to lead the people to the nearest safe assembly area for St. Luke's Global City? You must drag the person below to safety.";
+        }
+    }
+
     function handleGridDrop(el, trg) {
         if (trg.dataset.correct === "true") {
             if(trg.dataset.step !== undefined && parseInt(trg.dataset.step) !== gStep) { triggerErr(); return; }
             trg.classList.add("filled-correct-grid"); gStep++;
             if(document.querySelectorAll('#grid-stage-section .drop-zone[data-correct="true"]').length === gStep) document.getElementById("gridNextBtn").style.display="block";
-        } else triggerErr();
+        } else { triggerErr(); }
     }
 
-    function setupS4() { document.getElementById("pass-section").style.display = 'block'; }
+    function setupS4() { 
+        document.getElementById("pass-section").style.display = 'block'; 
+        document.getElementById("s4-desc").style.display = 'block';
+        document.getElementById("s4-start-btn").style.display = 'block';
+        document.getElementById("s4-content-ui").style.display = 'none';
+        document.getElementById("passReturnBtn").style.display = "none";
+    }
+
     function startPassTask() {
+        document.getElementById("s4-desc").style.display = 'none';
         document.getElementById("s4-start-btn").style.display = 'none';
         document.getElementById("s4-content-ui").style.display = 'block';
         pcCount=0;
+        document.querySelectorAll(".t-trg").forEach(el => {el.innerText = ""; el.classList.remove("slot-correct");});
         document.getElementById("pass-bank").innerHTML=["PIN","NOZZLE","LEVER","SWEEP"].sort(()=>Math.random()-0.5).map(c=>`<div class="choice-box-uniform dr-item" style="touch-action:none;">${c}</div>`).join(''); 
     }
 
     function setupS5() { 
         document.getElementById("logic-box").style.display = 'block'; 
         document.getElementById("logic-title").innerText = "The Life-Saving Checklist"; 
-        document.getElementById("logic-desc").innerHTML = `<p style="font-size:13px; color:#1e293b; line-height:1.4;">Before you touch the fire, follow the safety rule to keep everyone alive.</p>`;
+        document.getElementById("logic-desc").innerHTML = `
+            <p style="font-size:13px; color:#1e293b; line-height:1.4;">
+                You’ve reached a patient room and see smoke. Before you even touch the fire, 
+                you have to follow the safety rule of hospital safety to keep everyone alive.
+            </p>`;
+        document.getElementById("logic-start-btn").innerText = 'SAFETY RULE';
+        document.getElementById("logic-start-btn").style.display = 'block';
+        document.getElementById("logic-body").style.display = 'none';
+        document.getElementById("logicNextBtn").style.display = 'none';
     }
 
     function startLogicTask() {
         document.getElementById("logic-start-btn").style.display = 'none';
         document.getElementById("logic-body").style.display = 'block';
+        
         if(wavesCleared === 4) { 
-            document.getElementById("logic-desc").innerHTML = `<p style="font-size:22px; font-weight:bold; color:#1e293b; line-height:1.4;">Follow the R-A-C-E steps in the correct order.</p>`;
-            rStep = 0; drawRace(); 
+            document.getElementById("logic-desc").innerHTML = `
+                <p style="font-size:22px; font-weight:bold; color:#1e293b; line-height:1.4;">
+                    Follow the R-A-C-E steps in the correct order to manage the scene. 
+                    You must tap the correct meaning of R-A-C-E.
+                </p>`;
+            rStep = 0; 
+            raceSelections = []; 
+            drawRace(); 
+        } else if (wavesCleared >= 5 && wavesCleared <= 7) {
+            document.getElementById('logic-question-area').style.display = 'block';
+            document.getElementById('logic-color-grid').style.display = 'flex';
         }
     }
     
@@ -561,16 +712,46 @@
             {l:'E', t:'Evacuate 🏃', a:['Evacuate 🏃'], opts: ['Extinguish 🧯', 'Evacuate 🏃', 'Eat 🍎', 'Exit 🚪']}
         ];
         const o = document.getElementById("logic-body"); 
-        o.innerHTML = `<div style="display:flex; justify-content:center; gap:5px; margin-bottom:15px;">` + raceData.map(r=>`<div class="race-letter-box" id="r${r.l}"><b>${r.l}</b><div style="font-size:9px;" id="rt${r.l}"></div></div>`).join('') + `</div><div class="choice-grid" id="ro"></div>`;
-        for(let i=0; i<rStep; i++){ document.getElementById("r"+raceData[i].l).style.backgroundColor = "#dcfce7"; document.getElementById("rt"+raceData[i].l).innerText = raceData[i].t; }
-        if(rStep === 4){ document.getElementById("logicNextBtn").style.display = "block"; return; }
+        o.innerHTML = `<div style="display:flex; justify-content:center; gap:5px; margin-bottom:15px;">` + 
+            raceData.map(r=>`<div class="race-letter-box" id="r${r.l}"><b>${r.l}</b><div style="font-size:9px;" id="rt${r.l}"></div></div>`).join('') + 
+            `</div><div class="choice-grid" id="ro"></div>`;
+        
+        for(let i=0; i<rStep; i++){ 
+            let b = document.getElementById("r"+raceData[i].l); 
+            b.style.backgroundColor = "#dcfce7"; 
+            document.getElementById("rt"+raceData[i].l).innerText = raceData[i].t;
+        }
+
+        if(rStep === 4){ 
+            document.getElementById("logicNextBtn").innerText = "CHECKLIST COMPLETE →";
+            document.getElementById("logicNextBtn").style.display = "block"; 
+            return; 
+        }
+        
         const current = raceData[rStep];
         let optionsToShow = [...current.a];
         let pool = current.opts.filter(opt => !current.a.includes(opt));
         while(optionsToShow.length < 4) optionsToShow.push(pool.shift());
+        
         optionsToShow.sort(() => Math.random() - 0.5).forEach(opt => {
-            let b = document.createElement("div"); b.className = "choice-box-uniform race-choice"; b.innerText = opt;
-            b.onclick = () => { if(current.a.includes(opt)) { rStep++; drawRace(); } else triggerErr(); };
+            let b = document.createElement("div"); 
+            b.className = "choice-box-uniform race-choice"; 
+            if(raceSelections.includes(opt)) b.style.background = "#16a34a";
+            b.innerText = opt;
+            b.onclick = () => { 
+                if(current.a.includes(opt)) {
+                    if(!raceSelections.includes(opt)) {
+                        raceSelections.push(opt);
+                        if(raceSelections.length === current.a.length) { 
+                            rStep++; 
+                            raceSelections = []; 
+                            drawRace(); 
+                        } else { 
+                            b.style.background = "#16a34a"; 
+                        }
+                    }
+                } else { triggerErr(); }
+            };
             document.getElementById("ro").appendChild(b);
         });
     }
@@ -578,18 +759,48 @@
     function setupS6(s) {
         document.getElementById("logic-box").style.display = 'block'; 
         document.getElementById("logic-start-btn").style.display = 'block';
+        document.getElementById("logic-start-btn").innerText = "CODE SHOULD BE ACTIVATED";
+        document.getElementById("logic-body").style.display = 'none';
         document.getElementById("logicNextBtn").style.display = "none";
-        const colors = ['Red', 'Orange', 'Black', 'Green', 'Blue', 'Pink', 'Silver'];
-        let winC = (s===6)?"Orange":(s===7)?"Pink":"Silver";
-        let scenarioText = (s===6)?"Hazardous spill! Which code warns the hospital team?":
-                           (s===7)?"Missing baby! What is the code for abduction?":
-                           "Active shooter! Which code do you call?";
         
-        document.getElementById("logic-title").innerText = (s===6)?"The Chemical Spill":(s===7)?"Security Alert":"Immediate Danger";
-        document.getElementById("logic-desc").innerHTML = `<p style="font-size:13px; color:#1e293b; line-height:1.4; margin-bottom:10px;">${scenarioText}</p>`;
-        document.getElementById("logic-body").innerHTML = `<div class="rainbow-grid">` + colors.map(c => {
-            let bg = (c==='Silver')?'#717171':(c==='Pink')?'#FF1493':(c==='Black')?'#000000':c.toLowerCase();
-            return `<div class="rainbow-box" style="background:${bg}" onclick="if('${c}'==='${winC}') { document.getElementById('logicNextBtn').style.display='block'; } else triggerErr();">${c}</div>`;
+        let title = "", desc = "", winC = "", btnTxt = "", scenarioText = "";
+        const colors = ['Red', 'Orange', 'Black', 'Green', 'Blue', 'Pink', 'Silver'];
+        
+        if (s === 6) { 
+            title = "The Chemical Spill"; 
+            scenarioText = "While moving through the ward, you spot a broken container of chemotherapy drugs leaking across the floor. This isn't a normal fire; it’s a hazardous spill.";
+            desc = "Which emergency color code warns the hospital team about a Hazardous Material Spill? You must tap the correct code to be activated.";
+            winC = "Orange"; 
+            btnTxt = "CODE ACTIVATED";
+        } else if (s === 7) { 
+            title = "Security Alert"; 
+            scenarioText = "A frantic nurse shouts that a baby is missing and a stranger was seen near the elevators. You need to trigger a lockdown immediately.";
+            desc = "What is the specific code for a Missing Child/Abduction? You must tap the correct code to be activated.";
+            winC = "Pink"; 
+            btnTxt = "SECURE THE EXITS";
+        } else if (s === 8) { 
+            title = "Immediate Danger"; 
+            scenarioText = "You hear a commotion in the lobby. A person with a weapon is acting aggressively. You need to call for security and police backup without delay.";
+            desc = "Which code do you call for an Active Shooter or Armed Threat? You must tap the correct code to be activated.";
+            winC = "Silver"; 
+            btnTxt = "CALL FOR HELP";
+        }
+        
+        document.getElementById("logic-title").innerText = title;
+        document.getElementById("logic-desc").innerHTML = `
+            <p style="font-size:13px; color:#1e293b; line-height:1.4; margin-bottom:10px;">${scenarioText}</p>
+            <div id="logic-question-area" style="display:none;">
+                <p style="font-size:14px; font-weight:bold; color:#2563eb;">${desc}</p>
+            </div>
+        `;
+        document.getElementById("logicNextBtn").innerText = btnTxt;
+        
+        document.getElementById("logic-body").innerHTML = `<div class="rainbow-grid" id="logic-color-grid" style="display:none;">` + colors.map(c => {
+            let bg = c.toLowerCase(); 
+            if (bg === 'silver') bg = '#717171'; 
+            if (bg === 'pink') bg = '#FF1493'; 
+            if (bg === 'black') bg = '#000000';
+            return `<div class="rainbow-box" style="background:${bg}" onclick="if('${c}'==='${winC}') { document.getElementById('logicNextBtn').style.display='block'; this.style.outline='3px solid gold'; } else { triggerErr(); }">${c}</div>`;
         }).join('') + `</div>`;
     }
 
@@ -599,26 +810,56 @@
     }
 
     function loop() { if(gameActive) { update(); draw(); requestAnimationFrame(loop); } }
-    
+
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawRepeatingBackground(bgOffset);
-        ctx.font = "80px Arial"; ctx.fillText("🧯", 40, extY + 70);
+        const drawY = isNaN(extY) ? 150 : extY;
+        ctx.font = "80px Arial"; ctx.fillText("🧯", 40, drawY + 70);
         ctx.fillStyle = "white"; particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI*2); ctx.fill(); });
         fires.forEach(f => { if(f.alive) { ctx.font = f.size + "px Arial"; ctx.fillText("🔥", f.x, f.y); } });
-        if(majorBlazeActive) { ctx.font = "200px Arial"; ctx.shadowBlur = 20; ctx.shadowColor = "yellow"; ctx.fillText("🔥", bossX, 240); ctx.shadowBlur = 0; }
+        if(majorBlazeActive) { 
+            ctx.font = "200px Arial"; ctx.shadowBlur = 20; ctx.shadowColor = "yellow"; 
+            ctx.fillText("🔥", bossX, 240); ctx.shadowBlur = 0; 
+        }
     }
 
     function revealCodeRedirect() {
         const date = new Date();
-        const uniqueCode = `SLMC-${playerLocation.substring(0,2)}-${playerID.slice(-3)}${date.getSeconds()+date.getMinutes()}`;
-        window.open(`https://script.google.com/a/macros/stlukes.com.ph/s/AKfycbzcqiGztCFof_d6KkI0lKw8UTtFfJZ0RSVFI8WbiuCGtbXYXeCv9hqtipcvAhQPpV3O/exec?code=${uniqueCode}`, "_blank");
+        const codePart1 = playerID.slice(-3);
+        const codePart2 = playerLocation.substring(0, 2);
+        const codePart3 = date.getSeconds() + date.getMinutes();
+        const uniqueCode = `SLMC-${codePart2}-${codePart1}${codePart3}`;
+        const targetUrl = `https://script.google.com/a/macros/stlukes.com.ph/s/AKfycbzcqiGztCFof_d6KkI0lKw8UTtFfJZ0RSVFI8WbiuCGtbXYXeCv9hqtipcvAhQPpV3O/exec?code=${uniqueCode}`;
+        window.open(targetUrl, "_blank");
     }
 
+    let audioEnabled = false;
     const bgMusic = document.getElementById("bgMusic");
     const audioIcon = document.getElementById("audio-icon");
-    function toggleAudio() { if (bgMusic.paused) { bgMusic.play(); audioIcon.innerText = "🔊"; } else { bgMusic.pause(); audioIcon.innerText = "🔇"; } }
-    document.addEventListener("click", () => { if(bgMusic.paused) { bgMusic.volume = 0.5; bgMusic.play(); } }, { once: true });
+
+    function startAudioOnce() {
+        if (!audioEnabled) {
+            bgMusic.volume = 0.5;
+            bgMusic.play().then(() => {
+                audioEnabled = true;
+                audioIcon.innerText = "🔊";
+            }).catch(() => {});
+        }
+    }
+
+    document.addEventListener("click", startAudioOnce, { once: true });
+    document.addEventListener("touchstart", startAudioOnce, { once: true });
+
+    function toggleAudio() {
+        if (bgMusic.paused) {
+            bgMusic.play();
+            audioIcon.innerText = "🔊";
+        } else {
+            bgMusic.pause();
+            audioIcon.innerText = "🔇";
+        }
+    }
 </script>
 </body>
 </html>
