@@ -418,54 +418,62 @@
         canvas.addEventListener("pointermove", handleMove);
 
         let activeItem = null, shiftX, shiftY;
+        
         document.addEventListener("pointerdown", (e) => {
             if (e.target.classList.contains("dr-item")) {
-                activeItem = e.target; const rect = activeItem.getBoundingClientRect();
+                activeItem = e.target; 
+                const rect = activeItem.getBoundingClientRect();
                 shiftX = rect.width / 2; shiftY = rect.height / 2;
-                activeItem.style.position = 'fixed'; activeItem.style.zIndex = 2000;
+                
+                activeItem.style.position = 'fixed'; 
+                activeItem.style.zIndex = 2000;
+                activeItem.style.pointerEvents = 'none'; // CRITICAL: Stop item from blocking the target
                 activeItem.style.left = (e.clientX - shiftX) + 'px';
                 activeItem.style.top = (e.clientY - shiftY) + 'px';
                 activeItem.setPointerCapture(e.pointerId);
             }
         });
+
         document.addEventListener("pointermove", (e) => { 
             if (activeItem) { 
-                activeItem.style.left = e.clientX - shiftX + 'px'; 
-                activeItem.style.top = e.clientY - shiftY + 'px'; 
+                activeItem.style.left = (e.clientX - shiftX) + 'px'; 
+                activeItem.style.top = (e.clientY - shiftY) + 'px'; 
             } 
         });
+
         document.addEventListener("pointerup", (e) => {
             if (!activeItem) return;
             
-            // MAGNETIC SNAPPING LOGIC REWORKED
+            activeItem.style.pointerEvents = 'auto'; // Restore pointer events
+
             const itemRect = activeItem.getBoundingClientRect();
             const itemX = itemRect.left + itemRect.width / 2;
             const itemY = itemRect.top + itemRect.height / 2;
 
-            activeItem.style.visibility = 'hidden'; 
-            
             let snappingTarget = null;
             const targets = document.querySelectorAll(".part-target, .drop-zone, .t-trg");
-            const detectionRadius = 60; // Increased radius for easier landing
-
+            
+            // MAGNETIC CHECK: Using a generous bounding box check
             targets.forEach(t => {
                 const rect = t.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                const dist = Math.sqrt(Math.pow(itemX - centerX, 2) + Math.pow(itemY - centerY, 2));
-                if (dist < detectionRadius) snappingTarget = t;
+                const buffer = 30; // 30px magnetic radius extension
+                
+                if (itemX > rect.left - buffer && itemX < rect.right + buffer && 
+                    itemY > rect.top - buffer && itemY < rect.bottom + buffer) {
+                    snappingTarget = t;
+                }
             });
 
-            activeItem.style.visibility = 'visible';
-            
             if (snappingTarget) {
-                // EXTINGUISHER DIAGRAM LOGIC
+                const itemText = activeItem.innerText.trim();
+
+                // WAVE 1: DIAGRAM LOGIC
                 if (snappingTarget.classList.contains("part-target")) {
-                    if (snappingTarget.dataset.answer === activeItem.innerText.trim()) {
-                        snappingTarget.innerText = activeItem.innerText; 
+                    if (snappingTarget.dataset.answer === itemText) {
+                        snappingTarget.innerText = itemText; 
                         snappingTarget.classList.add("filled-correct"); 
                         activeItem.style.display = "none";
-                        if (document.querySelectorAll('#quiz-section .filled-correct').length === 6) 
+                        if (document.querySelectorAll('#s1-diagram .filled-correct').length === 6) 
                             document.getElementById("quizReturnBtn").style.display = "block";
                     } else { triggerErr(); }
                 }
@@ -473,11 +481,10 @@
                 else if (snappingTarget.classList.contains("drop-zone")) {
                     handleGridDrop(activeItem, snappingTarget);
                 }
-                // PASS SEQUENCE LOGIC (Wave 4)
+                // WAVE 4: PASS SEQUENCE LOGIC
                 else if (snappingTarget.classList.contains("t-trg")) {
-                    const cleanText = activeItem.innerText.trim();
-                    if (snappingTarget.id === "slot-" + cleanText) {
-                        snappingTarget.innerText = cleanText; 
+                    if (snappingTarget.id === "slot-" + itemText) {
+                        snappingTarget.innerText = itemText; 
                         snappingTarget.classList.add("slot-correct"); 
                         activeItem.style.display = "none";
                         pcCount++; 
@@ -485,9 +492,12 @@
                     } else { triggerErr(); }
                 }
             }
-            activeItem.style.position = 'static'; 
-            activeItem.style.zIndex = '';
-            activeItem = null;
+
+            if (activeItem) {
+                activeItem.style.position = 'static'; 
+                activeItem.style.zIndex = '';
+                activeItem = null;
+            }
         });
     }
 
